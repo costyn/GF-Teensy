@@ -3,7 +3,7 @@
 
    By: Costyn van Dongen
 
-   Note: MAX LEDS: 255 (due to use of uint8_t in for loops)
+   Note: MAX LEDS: 255 (due to use of uint8_t)
 
    TODO:
        Get rid of MPU interrupt stuff. I don't need it, but removing it without breaking shit is tricky.
@@ -34,7 +34,7 @@
 #include <MPU6050_6Axis_MotionApps20.h>
 #endif
 
-#define DEFAULT_LED_MODE 21
+#define DEFAULT_LED_MODE 6
 
 
 #if FASTLED_VERSION < 3001000
@@ -369,8 +369,6 @@ void setup() {
 
   pinMode(BPM_BUTTON_PIN, INPUT_PULLUP);
 
-  //  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), shortKeyPress, RISING);
-
   set_max_power_in_volts_and_milliamps(5, 500);
 
 #ifdef DEBUG
@@ -444,8 +442,8 @@ taskCheckButtonPress.enable() ;
 #endif
 
   //#ifdef JELLY
-  tapTempo.setMaxBPM(25);
-  tapTempo.setMinBPM(25.0);
+  tapTempo.setMaxBPM(120);
+//  tapTempo.setMinBPM(25.0);
   //#endif
 
   inputString.reserve(200);
@@ -513,6 +511,7 @@ void ledModeSelect() {
 #ifdef RT_TWIRL1
   } else if ( strcmp(routines[ledMode], "twirl1") == 0 ) {
     twirlers( 1, false ) ;
+//    taskLedModeSelect.setInterval( 50 ) ;
 #endif
 
 #ifdef RT_TWIRL2
@@ -649,7 +648,7 @@ void ledModeSelect() {
 #ifdef RT_JUGGLE_PAL
   } else if ( strcmp(routines[ledMode], "jugglepal") == 0 ) {
     jugglePal() ;
-    taskLedModeSelect.setInterval( 50 ) ; // fast refresh rate needed to not skip any LEDs
+    taskLedModeSelect.setInterval( 150 ) ; // fast refresh rate needed to not skip any LEDs
 #endif
 
 #ifdef RT_NOISE_LAVA

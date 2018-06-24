@@ -674,26 +674,36 @@ void jugglePal() {                                             // A time (rather
   static uint8_t    thishue =   0;                                     // Starting hue.
   static uint8_t     curhue =   0;                                     // The current hue
   static uint8_t   thisbeat =   35;                                     // Higher = faster movement.
+  static float   fadeFactor = 1.00;                                     // 120 is reference BPM. Fade values are calculated for that.
 
   uint8_t secondHand = (millis() / 1000) % 60;                // Change '60' to a different value to change duration of the loop (also change timings below)
   static uint8_t lastSecond = 99;                             // This is our 'debounce' variable.
 
+
+
   if (lastSecond != secondHand) {                             // Debounce to make sure we're not repeating an assignment.
     lastSecond = secondHand;
     switch (secondHand) {
-      case  1: numdots = 1; thisbeat = tapTempo.getBPM() / 2; thisdiff = 8;  thisfade = 8;  thishue = 0;   break;
-      case  6: numdots = 2; thisbeat = tapTempo.getBPM() / 2; thisdiff = 4;  thisfade = 12; thishue = 0;   break;
-      case 25: numdots = 4; thisbeat = tapTempo.getBPM() / 2; thisdiff = 24; thisfade = 50; thishue = 128; break;
-      case 40: numdots = 2; thisbeat = tapTempo.getBPM() / 2; thisdiff = 16; thisfade = 50; thishue = 0; break;
-      case 52: numdots = 4; thisbeat = tapTempo.getBPM() / 2; thisdiff = 24; thisfade = 80; thishue = 160; break;
+      case  1: numdots = 1; thisbeat = tapTempo.getBPM() / 2; thisdiff = 8;  thisfade = (int)8*fadeFactor;  thishue = 0;   break;
+      case  6: numdots = 2; thisbeat = tapTempo.getBPM() / 2; thisdiff = 4;  thisfade = (int)12*fadeFactor; thishue = 0;   break;
+      case 25: numdots = 4; thisbeat = tapTempo.getBPM() / 2; thisdiff = 24; thisfade = (int)50*fadeFactor; thishue = 128; break;
+      case 40: numdots = 2; thisbeat = tapTempo.getBPM() / 2; thisdiff = 16; thisfade = (int)50*fadeFactor; thishue = 0; break;
+      case 52: numdots = 4; thisbeat = tapTempo.getBPM() / 2; thisdiff = 24; thisfade = (int)80*fadeFactor; thishue = 160; break;
     }
+    fadeFactor = tapTempo.getBPM() / 120 ;
   }
 
   curhue = thishue;                                           // Reset the hue values.
   fadeToBlackBy(leds, NUM_LEDS, thisfade);
 
   for ( uint8_t i = 0; i < numdots; i++) {
-    leds[beatsin16(thisbeat + i + numdots, 0, NUM_LEDS - 1)] += ColorFromPalette(RainbowColors_p, curhue, 255, LINEARBLEND); // Munge the values and pick a colour from the palette
+    uint8_t whichLED = beatsin16(thisbeat + i + numdots, 0, NUM_LEDS - 1);
+    // if( numdots == 1 ) {
+    //   DEBUG_PRINT(whichLED);
+    //   DEBUG_PRINT(" ");
+    //   DEBUG_PRINTLN( micros() );
+    // }
+    leds[whichLED] += ColorFromPalette(RainbowColors_p, curhue, 255, LINEARBLEND); // Munge the values and pick a colour from the palette
     curhue += thisdiff;
   }
 
