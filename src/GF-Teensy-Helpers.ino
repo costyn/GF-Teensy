@@ -155,7 +155,7 @@ void checkButtonPress() {
   static unsigned long buttonTimer = 0;
   static boolean buttonActive = false;
 
-  if (digitalRead(BUTTON_PIN) == LOW) {
+  if (digitalRead(BUTTON_PIN) == HIGH) {
     // Start the timer
     if (buttonActive == false) {
       buttonActive = true;
@@ -169,7 +169,7 @@ void checkButtonPress() {
 
 #ifndef USING_MPU
     if( longPressActive == true ) {
-          cycleBrightness() ;
+//          cycleBrightness() ;
     }
 #endif
 
@@ -201,10 +201,41 @@ void checkButtonPress() {
 
   if (digitalRead(BPM_BUTTON_PIN) == LOW) {
     tapTempo.update(true);
-    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
+//    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
   } else {
     tapTempo.update(false);
   }
+
+  serialEvent() ;
+  if (stringComplete) {
+    if( inputString.charAt(0) == 'p' ) {
+      inputString.remove(0,1);
+      uint8_t input = inputString.toInt();
+      if( input < NUMROUTINES ) {
+        ledMode = inputString.toInt();
+      }
+      DEBUG_PRINT("LedMode: ");
+      DEBUG_PRINTLN( ledMode ) ;
+    }
+    if( inputString.charAt(0) == 'b' ) {
+      inputString.remove(0,1);
+      tapTempo.setMaxBPM(inputString.toInt());
+      tapTempo.setMinBPM(inputString.toInt());
+      DEBUG_PRINT("BPM: ");
+      DEBUG_PRINTLN( inputString.toInt() ) ;
+    }
+    if( inputString.charAt(0) == 'm' ) {
+      inputString.remove(0,1);
+      maxBright = inputString.toInt() ;
+      DEBUG_PRINT("MaxBright: ");
+      DEBUG_PRINTLN( maxBright ) ;
+    }
+
+    // clear the string:
+    inputString = "";
+    stringComplete = false;
+  }
+
 }
 
 // Only use if no MPU present:
@@ -245,4 +276,24 @@ int freeRam ()
   extern int __heap_start, *__brkval;
   int v;
   return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+}
+
+
+/*
+  SerialEvent occurs whenever a new data comes in the hardware serial RX. This
+  routine is run between each time loop() runs, so using delay inside loop can
+  delay response. Multiple bytes of data may be available.
+*/
+void serialEvent() {
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
 }

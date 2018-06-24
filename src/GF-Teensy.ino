@@ -75,7 +75,7 @@
 #define DATA_PIN  13
 #define CLOCK_PIN 14
 #define COLOR_ORDER BGR
-#define NUM_LEDS    80
+#define NUM_LEDS    144
 #endif
 
 
@@ -92,8 +92,8 @@
 #endif
 
 
-#define DEFAULT_BRIGHTNESS 20  // 0-255, higher number is brighter.
-#define BUTTON_PIN  18   // button is connected to pin 3 and GND
+#define DEFAULT_BRIGHTNESS 40  // 0-255, higher number is brighter.
+#define BUTTON_PIN  16   // button is connected to pin 3 and GND
 #define BUTTON_LED_PIN 3   // pin to which the button LED is attached
 
 #define BPM_BUTTON_PIN 19  // button for adjusting BPM
@@ -104,6 +104,11 @@ uint8_t maxBright = DEFAULT_BRIGHTNESS ;
 // BPM and button stuff
 boolean longPressActive = false;
 ArduinoTapTempo tapTempo;
+
+// Serial input to change patterns, speed, etc
+String inputString = "";         // a String to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
+
 
 // A-la-carte routine selection. Uncomment each define below to
 // include or not include the routine in the uploaded code.
@@ -356,9 +361,9 @@ void setup() {
 
 //  FastLED.setDither( 0 );
 
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-  pinMode(16, OUTPUT);
-  digitalWrite(16, LOW);
+  pinMode(BUTTON_PIN, INPUT);
+  pinMode(15, OUTPUT);
+  digitalWrite(15, LOW);
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
 
@@ -381,8 +386,8 @@ void setup() {
   taskLedModeSelect.enable() ;
 
 
-//  runner.addTask(taskCheckButtonPress);
-//  taskCheckButtonPress.enable() ;
+runner.addTask(taskCheckButtonPress);
+taskCheckButtonPress.enable() ;
 
 
   // ==================================================================== //
@@ -438,10 +443,13 @@ void setup() {
   taskPrintDebugging.enable() ;
 #endif
 
-//#ifdef JELLY
-tapTempo.setMaxBPM(25.0);
-tapTempo.setMinBPM(25.0);
-//#endif
+  //#ifdef JELLY
+  tapTempo.setMaxBPM(25);
+  tapTempo.setMinBPM(25.0);
+  //#endif
+
+  inputString.reserve(200);
+
 
 }  // end setup()
 
@@ -457,9 +465,9 @@ void loop() {
 
 void ledModeSelect() {
 
-  if( beatsin8( 25, 0, 255) >= 254 ) {
+  if( beatsin8( 50, 0, 255) >= 254 ) {
     tapTempo.update(true);
-    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
+//    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
   } else {
     tapTempo.update(false);
   }
@@ -641,7 +649,7 @@ void ledModeSelect() {
 #ifdef RT_JUGGLE_PAL
   } else if ( strcmp(routines[ledMode], "jugglepal") == 0 ) {
     jugglePal() ;
-    taskLedModeSelect.setInterval( 500 ) ; // fast refresh rate needed to not skip any LEDs
+    taskLedModeSelect.setInterval( 50 ) ; // fast refresh rate needed to not skip any LEDs
 #endif
 
 #ifdef RT_NOISE_LAVA
