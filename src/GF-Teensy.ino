@@ -14,12 +14,14 @@
 
 // Turn on microsecond resolution; needed to sync some routines to BPM
 #define _TASK_MICRO_RES
+#define _TASK_TIMECRITICAL
 //#define USING_MPU
 //#define JELLY
 //#define FAN
+//#define NEWFAN
 //#define RING
-#define BALLOON
-
+//#define BALLOON
+//#define GLOWSTAFF
 
 #ifdef RING
 #define USING_MPU
@@ -57,10 +59,12 @@
 
 #define TASK_RES_MULTIPLIER 1000
 
+#if defined(GLOWSTAFF)
 #define DOTSTAR
-//#define NEO_PIXEL
+#else
+#define NEO_PIXEL
+#endif
 
-// 48 - 55
 
 #ifdef NEO_PIXEL
 #define CHIPSET     WS2812B
@@ -69,14 +73,20 @@
 #define COLOR_ORDER GRB  // Try mixing up the letters (RGB, GBR, BRG, etc) for a whole new world of color combinations
 #endif
 
+
 #ifdef DOTSTAR
 #include <SPI.h>
 #define CHIPSET     APA102
-#define DATA_PIN  13
-#define CLOCK_PIN 14
+#define DATA_PIN  11
+#define CLOCK_PIN 13
 #define COLOR_ORDER BGR
 #define NUM_LEDS    144
 #endif
+
+#define DEFAULT_BRIGHTNESS 40  // 0-255, higher number is brighter.
+#define DEFAULT_BPM 120
+#define BUTTON_PIN  16   // button is connected to pin 3 and GND
+#define BUTTON_LED_PIN 3   // pin to which the button LED is attached
 
 
 #ifdef FAN
@@ -88,13 +98,20 @@
 #endif
 
 #ifdef JELLY
-#define NUM_LEDS 50
+#define NUM_LEDS 64
+#define BUTTON_PIN 18
+#define DEFAULT_BPM 40
 #endif
 
+#ifdef GLOWSTAFF
+#define NUM_LEDS 144
+#endif
 
-#define DEFAULT_BRIGHTNESS 40  // 0-255, higher number is brighter.
-#define BUTTON_PIN  16   // button is connected to pin 3 and GND
-#define BUTTON_LED_PIN 3   // pin to which the button LED is attached
+#ifdef NEWFAN
+#define LED_PIN 11
+#define NUM_LEDS 72
+#endif
+
 
 #define BPM_BUTTON_PIN 19  // button for adjusting BPM
 
@@ -383,9 +400,8 @@ void setup() {
   runner.addTask(taskLedModeSelect);
   taskLedModeSelect.enable() ;
 
-
-runner.addTask(taskCheckButtonPress);
-taskCheckButtonPress.enable() ;
+  runner.addTask(taskCheckButtonPress);
+  taskCheckButtonPress.enable() ;
 
 
   // ==================================================================== //
@@ -441,14 +457,8 @@ taskCheckButtonPress.enable() ;
   taskPrintDebugging.enable() ;
 #endif
 
-  //#ifdef JELLY
-  tapTempo.setMaxBPM(120);
-//  tapTempo.setMinBPM(25.0);
-  //#endif
-
+  tapTempo.setMaxBPM(DEFAULT_BPM);
   inputString.reserve(200);
-
-
 }  // end setup()
 
 
@@ -462,13 +472,6 @@ void loop() {
 
 
 void ledModeSelect() {
-
-  if( beatsin8( 50, 0, 255) >= 254 ) {
-    tapTempo.update(true);
-//    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
-  } else {
-    tapTempo.update(false);
-  }
 
   if ( strcmp(routines[ledMode], "p_rb") == 0  ) {
     FillLEDsFromPaletteColors(0) ;
@@ -511,7 +514,7 @@ void ledModeSelect() {
 #ifdef RT_TWIRL1
   } else if ( strcmp(routines[ledMode], "twirl1") == 0 ) {
     twirlers( 1, false ) ;
-//    taskLedModeSelect.setInterval( 50 ) ;
+    taskLedModeSelect.setInterval( TASK_IMMEDIATE ) ;
 #endif
 
 #ifdef RT_TWIRL2

@@ -161,25 +161,32 @@ bool isYawReliable() {
 
 #ifdef DEBUG_WITH_TASK
 void printDebugging() {
-  DEBUG_PRINT(yprX);
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(yprY);
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(yprZ);
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(aaRealX);
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(aaRealY);
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(aaRealZ);
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(activityLevel());
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT(isYawReliable());
-  DEBUG_PRINT(F("\t"));
-  DEBUG_PRINT( taskGetDMPData.getRunCounter() ) ;
-  DEBUG_PRINT("\t");
-  DEBUG_PRINT( freeRam() ) ;
-  DEBUG_PRINTLN() ;
-}
+    DEBUG_PRINT( taskLedModeSelect.getRunCounter() );
+    DEBUG_PRINT( "\t" );
+    DEBUG_PRINT( taskLedModeSelect.getInterval() );
+    DEBUG_PRINT( "\t" );
+    DEBUG_PRINT( taskLedModeSelect.getStartDelay() );
+
+//   DEBUG_PRINT(yprX);
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(yprY);
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(yprZ);
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(aaRealX);
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(aaRealY);
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(aaRealZ);
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(activityLevel());
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT(isYawReliable());
+//   DEBUG_PRINT(F("\t"));
+//   DEBUG_PRINT( taskGetDMPData.getRunCounter() ) ;
+//   DEBUG_PRINT("\t");
+//   DEBUG_PRINT( freeRam() ) ;
+//
+   DEBUG_PRINTLN() ;
+  }
 #endif

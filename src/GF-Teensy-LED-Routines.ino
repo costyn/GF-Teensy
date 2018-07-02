@@ -388,6 +388,13 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
         leds[pos] = clockwiseColor ;
       }
 
+
+      // if( numTwirlers == 1 ) {
+      //   DEBUG_PRINT(pos);
+      //   DEBUG_PRINT(" ");
+      //   DEBUG_PRINTLN( micros() );
+      // }
+
     } else {
 
       if ( opposing ) {
@@ -410,6 +417,18 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
 }
 #endif
 
+
+// void calculateDelay() {
+//   static unsigned long lastMicros ;
+//   static unsigned long avgMicros ;
+//   static uint16_t iterations ;
+//   uint16_t currentMicros = micros() ;
+//
+//   difference = currentMicros - lastMicros ;
+//   avgMicros = avgMicros +
+//
+//   lastMicros = currentMicros ;
+// }
 
 #ifdef RT_HEARTBEAT
 void heartbeat() {
