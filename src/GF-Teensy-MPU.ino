@@ -77,7 +77,7 @@ void getYPRAccel() {
       inBeat = true ;
       tapTempo.update(true);
       digitalWrite(BUTTON_LED_PIN, HIGH); // Beat detected, light up to show beat detected
-
+      // DEBUG_PRINTLN("BEAT detected");
     } else if ( maxAccel < 7000 ) {
       inBeat = false ;
       tapTempo.update(false);
@@ -95,19 +95,19 @@ void getYPRAccel() {
       digitalWrite(BUTTON_LED_PIN, LOW);
     }
 
-#define RANGE 30
+    #define RANGE 90
     int conYprX = constrain( yprX, initialYaw - RANGE, initialYaw + RANGE) ;
-    maxBright = map( conYprX, initialYaw - RANGE, initialYaw + RANGE, 0, 255) ;
-    //        DEBUG_PRINT(F("\t"));
-    //        DEBUG_PRINT(yprX);
-    //        DEBUG_PRINT(F("\t"));
-    //        DEBUG_PRINT(initialYaw);
-    //        DEBUG_PRINT(F("\t"));
-    //        DEBUG_PRINT(conYprX);
-    //        DEBUG_PRINT(F("\t"));
-    //        DEBUG_PRINT(maxBright);
-    //        DEBUG_PRINT(F("\t"));
-    //        DEBUG_PRINTLN();
+    maxBright = map( conYprX, initialYaw - RANGE, initialYaw + RANGE, 1, 255) ;
+     // DEBUG_PRINT(F("\t"));
+     // DEBUG_PRINT(yprX);
+     // DEBUG_PRINT(F("\t"));
+     // DEBUG_PRINT(initialYaw);
+     // DEBUG_PRINT(F("\t"));
+     // DEBUG_PRINT(conYprX);
+     // DEBUG_PRINT(F("\t"));
+     // DEBUG_PRINT(maxBright);
+     // DEBUG_PRINT(F("\t"));
+     // DEBUG_PRINTLN();
   }
 
   if ( ! longPressActive ) {
@@ -161,32 +161,32 @@ bool isYawReliable() {
 
 #ifdef DEBUG_WITH_TASK
 void printDebugging() {
-    DEBUG_PRINT( taskLedModeSelect.getRunCounter() );
-    DEBUG_PRINT( "\t" );
-    DEBUG_PRINT( taskLedModeSelect.getInterval() );
-    DEBUG_PRINT( "\t" );
-    DEBUG_PRINT( taskLedModeSelect.getStartDelay() );
+    // DEBUG_PRINT( taskLedModeSelect.getRunCounter() );
+    // DEBUG_PRINT( "\t" );
+    // DEBUG_PRINT( taskLedModeSelect.getInterval() );
+    // DEBUG_PRINT( "\t" );
+    // DEBUG_PRINT( taskLedModeSelect.getStartDelay() );
 
-//   DEBUG_PRINT(yprX);
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(yprY);
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(yprZ);
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(aaRealX);
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(aaRealY);
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(aaRealZ);
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(activityLevel());
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT(isYawReliable());
-//   DEBUG_PRINT(F("\t"));
-//   DEBUG_PRINT( taskGetDMPData.getRunCounter() ) ;
-//   DEBUG_PRINT("\t");
-//   DEBUG_PRINT( freeRam() ) ;
-//
+  DEBUG_PRINT(yprX);
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(yprY);
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(yprZ);
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(aaRealX);
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(aaRealY);
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(aaRealZ);
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(activityLevel());
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT(isYawReliable());
+  DEBUG_PRINT(F("\t"));
+  DEBUG_PRINT( taskGetDMPData.getRunCounter() ) ;
+  // DEBUG_PRINT("\t");
+  // DEBUG_PRINT( freeRam() ) ;
+
    DEBUG_PRINTLN() ;
   }
 #endif

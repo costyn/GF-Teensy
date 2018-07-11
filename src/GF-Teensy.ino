@@ -18,12 +18,12 @@
 //#define USING_MPU
 //#define JELLY
 //#define FAN
-//#define NEWFAN
+#define NEWFAN
 //#define RING
 //#define BALLOON
 //#define GLOWSTAFF
 
-#ifdef RING
+#if defined(RING) or defined(NEWFAN)
 #define USING_MPU
 #endif
 
@@ -36,7 +36,7 @@
 #include <MPU6050_6Axis_MotionApps20.h>
 #endif
 
-#define DEFAULT_LED_MODE 6
+#define DEFAULT_LED_MODE 0
 
 
 #if FASTLED_VERSION < 3001000
@@ -59,12 +59,14 @@
 
 #define TASK_RES_MULTIPLIER 1000
 
-#if defined(GLOWSTAFF)
+#if defined(RING)
 #define DOTSTAR
 #else
 #define NEO_PIXEL
 #endif
 
+
+//black green white red
 
 #ifdef NEO_PIXEL
 #define CHIPSET     WS2812B
@@ -83,7 +85,7 @@
 #define NUM_LEDS    144
 #endif
 
-#define DEFAULT_BRIGHTNESS 40  // 0-255, higher number is brighter.
+#define DEFAULT_BRIGHTNESS 200  // 0-255, higher number is brighter.
 #define DEFAULT_BPM 120
 #define BUTTON_PIN  16   // button is connected to pin 3 and GND
 #define BUTTON_LED_PIN 3   // pin to which the button LED is attached
@@ -104,16 +106,19 @@
 #endif
 
 #ifdef GLOWSTAFF
-#define NUM_LEDS 144
+#define LED_PIN     17   // which pin your Neopixels are connected to
+#define NUM_LEDS 58
 #endif
 
 #ifdef NEWFAN
 #define LED_PIN 11
 #define NUM_LEDS 72
+#define BUTTON_PIN  9   // button is connected to pin 3 and GND
+#define BPM_BUTTON_PIN 7  // button for adjusting BPM
 #endif
 
 
-#define BPM_BUTTON_PIN 19  // button for adjusting BPM
+
 
 CRGB leds[NUM_LEDS];
 uint8_t maxBright = DEFAULT_BRIGHTNESS ;
@@ -149,11 +154,11 @@ boolean stringComplete = false;  // whether the string is complete
 #define RT_DISCO_GLITTER
 //#define RT_RACERS
 //#define RT_WAVE
-//#define RT_SHAKE_IT
-//#define RT_STROBE1
-//#define RT_STROBE2
-////#define RT_VUMETER  // TODO - broken/unfinished
-//#define RT_GLED
+#ifdef USING_MPU
+#define RT_SHAKE_IT
+#define RT_STROBE1
+#define RT_GLED
+#endif
 //#define RT_HEARTBEAT
 #define RT_FASTLOOP
 #define RT_FASTLOOP2
@@ -170,7 +175,9 @@ boolean stringComplete = false;  // whether the string is complete
 #define RT_THREE_SIN_PAL
 //#define RT_BLACK
 #define RT_COLOR_GLOW
+#ifdef NEWFAN
 //#define RT_FAN_WIPE
+#endif
 
 byte ledMode = DEFAULT_LED_MODE ; // Which mode do we start with
 
@@ -379,8 +386,10 @@ void setup() {
 //  FastLED.setDither( 0 );
 
   pinMode(BUTTON_PIN, INPUT);
+#ifdef BALLOON
   pinMode(15, OUTPUT);
   digitalWrite(15, LOW);
+#endif
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
 
@@ -419,8 +428,9 @@ void setup() {
   mpu.initialize();
   devStatus = mpu.dmpInitialize();
 
-  // Strip MPU
-  // Your offsets:  -1527 -1127 2339  51  4 -7
+#ifdef RING
+// Strip MPU
+// Your offsets:  -1527 -1127 2339  51  4 -7
 
   mpu.setXAccelOffset(-1527 );
   mpu.setYAccelOffset(-1127);
@@ -428,7 +438,19 @@ void setup() {
   mpu.setXGyroOffset(51);
   mpu.setYGyroOffset(4);
   mpu.setZGyroOffset(-7);
+#endif
 
+#ifdef NEWFAN
+//  Your offsets:	410	-255	1745	-114	19	-23
+// Data is printed as: acelX acelY acelZ giroX giroY giroZ
+
+  mpu.setXAccelOffset(410 );
+  mpu.setYAccelOffset(-255);
+  mpu.setZAccelOffset(1745);
+  mpu.setXGyroOffset(-114);
+  mpu.setYGyroOffset(19);
+  mpu.setZGyroOffset(-23);
+#endif
 
   if (devStatus == 0) {
     mpu.setDMPEnabled(true);

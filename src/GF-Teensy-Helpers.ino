@@ -155,7 +155,7 @@ void checkButtonPress() {
   static unsigned long buttonTimer = 0;
   static boolean buttonActive = false;
 
-  if (digitalRead(BUTTON_PIN) == HIGH) {
+  if (digitalRead(BUTTON_PIN) == LOW) {
     // Start the timer
     if (buttonActive == false) {
       buttonActive = true;
@@ -169,7 +169,7 @@ void checkButtonPress() {
 
 #ifndef USING_MPU
     if( longPressActive == true ) {
-//          cycleBrightness() ;
+          cycleBrightness() ;
     }
 #endif
 

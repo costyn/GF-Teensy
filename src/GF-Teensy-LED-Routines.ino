@@ -901,6 +901,7 @@ void colorGlow() {
 #endif
 
 #ifdef RT_FAN_WIPE
+#define NUM_BLADES 14
 void fanWipe() {
     uint8_t hue = beatsin8( 1, 0, 255) ;
 //    uint8_t vertIndex = lerp8by8( 0, 6, triwave8( taskLedModeSelect.getRunCounter() % 128 ) * 2 ) ;
@@ -909,7 +910,7 @@ void fanWipe() {
 //    fill_solid(leds, NUM_LEDS, CRGB::Black);
 //   DEBUG_PRINTLN(vertIndex) ;
 
-    for(uint8_t blade = 0 ; blade < 14; blade++ ) {
+    for(uint8_t blade = 0 ; blade < NUM_BLADES; blade++ ) {
       leds[vertIndex+(blade*6)] = CHSV(hue, 255, 255) ;
     }
     // if( vertIndex == 0 ) {
