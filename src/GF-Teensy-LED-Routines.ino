@@ -54,7 +54,7 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
     colorIndex += STEPS;
   }
 
-  #if ! defined(BALLOON) && ! defined(JELLY)
+  #if ! defined(BALLOON) && ! defined(JELLY) && ! defined(GLOWSTAFF)
   //add extra glitter during "fast"
   if ( taskLedModeSelect.getInterval() < 5000 ) {
     addGlitter(250);
@@ -693,7 +693,8 @@ void jugglePal() {                                             // A time (rather
   static uint8_t    thishue =   0;                                     // Starting hue.
   static uint8_t     curhue =   0;                                     // The current hue
   static uint8_t   thisbeat =   35;                                     // Higher = faster movement.
-  static float   fadeFactor = 1.00;                                     // 120 is reference BPM. Fade values are calculated for that.
+//  static float   fadeFactor = 1.00;                                     // 120 is reference BPM. Fade values are calculated for that.
+  static float   fadeFactor = 0.50;                                     // 120 is reference BPM. Fade values are calculated for that.
 
   uint8_t secondHand = (millis() / 1000) % 60;                // Change '60' to a different value to change duration of the loop (also change timings below)
   static uint8_t lastSecond = 99;                             // This is our 'debounce' variable.

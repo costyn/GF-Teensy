@@ -18,10 +18,10 @@
 //#define USING_MPU
 //#define JELLY
 //#define FAN
-#define NEWFAN
+//#define NEWFAN
 //#define RING
 //#define BALLOON
-//#define GLOWSTAFF
+#define GLOWSTAFF
 
 #if defined(RING) or defined(NEWFAN)
 #define USING_MPU
@@ -36,7 +36,7 @@
 #include <MPU6050_6Axis_MotionApps20.h>
 #endif
 
-#define DEFAULT_LED_MODE 0
+#define DEFAULT_LED_MODE 21
 
 
 #if FASTLED_VERSION < 3001000
@@ -85,10 +85,11 @@
 #define NUM_LEDS    144
 #endif
 
-#define DEFAULT_BRIGHTNESS 200  // 0-255, higher number is brighter.
+#define DEFAULT_BRIGHTNESS 50  // 0-255, higher number is brighter; numbers above 200 will occassionally cause red-outs on strips
 #define DEFAULT_BPM 120
 #define BUTTON_PIN  16   // button is connected to pin 3 and GND
 #define BUTTON_LED_PIN 3   // pin to which the button LED is attached
+#define BPM_BUTTON_PIN 7  // button for adjusting BPM
 
 
 #ifdef FAN
@@ -108,13 +109,13 @@
 #ifdef GLOWSTAFF
 #define LED_PIN     17   // which pin your Neopixels are connected to
 #define NUM_LEDS 58
+#define BUTTON_PIN  18   // button is connected to pin 3 and GND
 #endif
 
 #ifdef NEWFAN
 #define LED_PIN 11
 #define NUM_LEDS 72
 #define BUTTON_PIN  9   // button is connected to pin 3 and GND
-#define BPM_BUTTON_PIN 7  // button for adjusting BPM
 #endif
 
 
@@ -389,6 +390,10 @@ void setup() {
 #ifdef BALLOON
   pinMode(15, OUTPUT);
   digitalWrite(15, LOW);
+#endif
+#ifdef GLOWSTAFF
+  pinMode(16, OUTPUT);
+  digitalWrite(16, LOW);
 #endif
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
