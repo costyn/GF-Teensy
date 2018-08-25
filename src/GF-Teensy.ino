@@ -21,10 +21,11 @@
 //#define NEWFAN
 //#define RING
 //#define BALLOON
-#define GLOWSTAFF
+//#define GLOWSTAFF
+#define GLOWFUR
 
 #if defined(RING) or defined(NEWFAN)
-#define USING_MPU
+//#define USING_MPU
 #endif
 
 #include <FastLED.h>
@@ -36,8 +37,7 @@
 #include <MPU6050_6Axis_MotionApps20.h>
 #endif
 
-#define DEFAULT_LED_MODE 21
-
+#define DEFAULT_LED_MODE 1
 
 #if FASTLED_VERSION < 3001000
 #error "Requires FastLED 3.1 or later; check github for latest code."
@@ -59,10 +59,10 @@
 
 #define TASK_RES_MULTIPLIER 1000
 
-#if defined(RING)
-#define DOTSTAR
+#if defined(RING) || defined(GLOWSTAFF)
+ #define SK9822
 #else
-#define NEO_PIXEL
+ #define NEO_PIXEL
 #endif
 
 
@@ -76,21 +76,23 @@
 #endif
 
 
-#ifdef DOTSTAR
+#ifdef SK9822
 #include <SPI.h>
-#define CHIPSET     APA102
-#define DATA_PIN  11
-#define CLOCK_PIN 13
+#define CHIPSET     SK9822
 #define COLOR_ORDER BGR
-#define NUM_LEDS    144
 #endif
 
-#define DEFAULT_BRIGHTNESS 50  // 0-255, higher number is brighter; numbers above 200 will occassionally cause red-outs on strips
+#define DEFAULT_BRIGHTNESS 30  // 0-255, higher number is brighter; numbers above 200 will occassionally cause red-outs on strips
 #define DEFAULT_BPM 120
 #define BUTTON_PIN  16   // button is connected to pin 3 and GND
 #define BUTTON_LED_PIN 3   // pin to which the button LED is attached
 #define BPM_BUTTON_PIN 7  // button for adjusting BPM
 
+#ifdef GLOWFUR
+#define NUM_LEDS 45
+#define BUTTON_PIN 18
+#define BPM_BUTTON_PIN 19  // button for adjusting BPM
+#endif
 
 #ifdef FAN
 #define NUM_LEDS 84
@@ -106,10 +108,11 @@
 #define DEFAULT_BPM 40
 #endif
 
+
 #ifdef GLOWSTAFF
-#define LED_PIN     17   // which pin your Neopixels are connected to
-#define NUM_LEDS 58
-#define BUTTON_PIN  18   // button is connected to pin 3 and GND
+// #define LED_PIN     17   // which pin your Neopixels are connected to
+#define NUM_LEDS 139
+#define BUTTON_PIN  18   // button is connected to pin 3 and GN
 #endif
 
 #ifdef NEWFAN
@@ -120,7 +123,7 @@
 
 
 
-
+#define NUM_LEDS 139
 CRGB leds[NUM_LEDS];
 uint8_t maxBright = DEFAULT_BRIGHTNESS ;
 
@@ -155,6 +158,7 @@ boolean stringComplete = false;  // whether the string is complete
 #define RT_DISCO_GLITTER
 //#define RT_RACERS
 //#define RT_WAVE
+//#define RT_FIRE2012
 #ifdef USING_MPU
 #define RT_SHAKE_IT
 #define RT_STROBE1
@@ -226,6 +230,9 @@ const char *routines[] = {
 #endif
 #ifdef RT_DISCO_GLITTER
   "dglitter",
+#endif
+#ifdef RT_FIRE2012
+  "fire2012",
 #endif
 #ifdef RT_RACERS
   "racers",
@@ -366,47 +373,51 @@ Task taskGetDMPData( 3 * TASK_RES_MULTIPLIER, TASK_FOREVER, &getDMPData);
 #endif
 
 
-#ifdef DEBUG_WITH_TASK
-void printDebugging() ; // prototype method
-Task taskPrintDebugging( 100000, TASK_FOREVER, &printDebugging);
-#endif
+// #ifdef DEBUG_WITH_TASK
+// void printDebugging() ; // prototype method
+// Task taskPrintDebugging( 100000, TASK_FOREVER, &printDebugging);
+// #endif
 
 
 
 
 void setup() {
   delay( 1000 ); // power-up safety delay
+
+  // #ifdef DEBUG
+  // Serial.begin(115200) ;
+  // DEBUG_PRINTLN( F("Hello!")) ;
+  // #endif
+
 #ifdef NEO_PIXEL
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
 #endif
-#ifdef DOTSTAR
-  FastLED.addLeds<CHIPSET, DATA_PIN, CLOCK_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+#ifdef SK9822
+  FastLED.addLeds<APA102, 11, 13, BGR, DATA_RATE_MHZ(12)>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+// FastLED.addLeds<CHIPSET, DATA_PIN, CLOCK_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 #endif
   FastLED.setBrightness(  maxBright );
 
+DEBUG_PRINTLN( F("Added LEDs")) ;
+
 //  FastLED.setDither( 0 );
 
-  pinMode(BUTTON_PIN, INPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
 #ifdef BALLOON
   pinMode(15, OUTPUT);
   digitalWrite(15, LOW);
-#endif
-#ifdef GLOWSTAFF
-  pinMode(16, OUTPUT);
-  digitalWrite(16, LOW);
 #endif
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
 
   pinMode(BPM_BUTTON_PIN, INPUT_PULLUP);
 
-  set_max_power_in_volts_and_milliamps(5, 500);
+
+  FastLED.setMaxPowerInVoltsAndMilliamps(5,475);
 
 #ifdef DEBUG
-  Serial.begin(115200) ;
-  DEBUG_PRINT( F("Starting up. Numroutines = ")) ;
-  DEBUG_PRINTLN( NUMROUTINES ) ;
-
+DEBUG_PRINT( F("Starting up. Numroutines = ")) ;
+DEBUG_PRINTLN( NUMROUTINES ) ;
 #endif
 
   /* Start the scheduler */
@@ -448,6 +459,7 @@ void setup() {
 #ifdef NEWFAN
 //  Your offsets:	410	-255	1745	-114	19	-23
 // Data is printed as: acelX acelY acelZ giroX giroY giroZ
+
 
   mpu.setXAccelOffset(410 );
   mpu.setYAccelOffset(-255);
@@ -547,6 +559,7 @@ void ledModeSelect() {
 #ifdef RT_TWIRL2
   } else if ( strcmp(routines[ledMode], "twirl2") == 0 ) {
     twirlers( 2, false ) ;
+    taskLedModeSelect.setInterval( TASK_IMMEDIATE ) ;
 #endif
 
 #ifdef RT_TWIRL4
@@ -600,6 +613,12 @@ void ledModeSelect() {
   } else if ( strcmp(routines[ledMode], "gled") == 0 ) {
     gLed() ;
     taskLedModeSelect.setInterval( 5 * TASK_RES_MULTIPLIER ) ;
+#endif
+
+#ifdef RT_FIRE2012
+  } else if ( strcmp(routines[ledMode], "fire2012") == 0 ) {
+    Fire2012() ;
+    taskLedModeSelect.setInterval( 500 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_BLACK

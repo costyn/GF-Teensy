@@ -70,7 +70,11 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
 #endif
   FastLED.show();
 
+#ifndef GLOWSTAFF
   taskLedModeSelect.setInterval( beatsin16( tapTempo.getBPM(), 1500, 50000) ) ;
+#else
+  taskLedModeSelect.setInterval( tapTempo.getBeatLength()*20 ) ;
+#endif
 }
 
 
@@ -413,7 +417,7 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
   }
   FastLED.setBrightness( maxBright ) ;
   FastLED.show();
-  taskLedModeSelect.setInterval( 1 * TASK_RES_MULTIPLIER ) ;
+//  taskLedModeSelect.setInterval( 1 * TASK_RES_MULTIPLIER ) ;
 }
 #endif
 
@@ -693,8 +697,7 @@ void jugglePal() {                                             // A time (rather
   static uint8_t    thishue =   0;                                     // Starting hue.
   static uint8_t     curhue =   0;                                     // The current hue
   static uint8_t   thisbeat =   35;                                     // Higher = faster movement.
-//  static float   fadeFactor = 1.00;                                     // 120 is reference BPM. Fade values are calculated for that.
-  static float   fadeFactor = 0.50;                                     // 120 is reference BPM. Fade values are calculated for that.
+  static float   fadeFactor = 1.00;                                     // 120 is reference BPM. Fade values are calculated for that.
 
   uint8_t secondHand = (millis() / 1000) % 60;                // Change '60' to a different value to change duration of the loop (also change timings below)
   static uint8_t lastSecond = 99;                             // This is our 'debounce' variable.

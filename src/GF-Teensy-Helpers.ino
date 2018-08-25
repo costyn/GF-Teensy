@@ -219,8 +219,7 @@ void checkButtonPress() {
     }
     if( inputString.charAt(0) == 'b' ) {
       inputString.remove(0,1);
-      tapTempo.setMaxBPM(inputString.toInt());
-      tapTempo.setMinBPM(inputString.toInt());
+      tapTempo.setBPM(inputString.toInt());
       DEBUG_PRINT("BPM: ");
       DEBUG_PRINTLN( inputString.toInt() ) ;
     }
@@ -244,8 +243,10 @@ void checkButtonPress() {
 void cycleBrightness() {
   static uint8_t currentBright = DEFAULT_BRIGHTNESS ;
 
-#ifdef FAN
+#if defined(FAN)
   uint8_t deviceMaxBright = 75;
+#elif defined(GLOWSTAFF)
+  uint8_t deviceMaxBright = 150;
 #else
   uint8_t deviceMaxBright = 255;
 #endif
