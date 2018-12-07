@@ -1,8 +1,10 @@
 #define P_MAX_POS_ACCEL 3000
-#ifdef JELLY
-#define STEPS       2   // How wide the bands of color are.  1 = more like a gradient, 10 = more like stripes
+
+// How wide the bands of color are.  1 = more like a gradient, 10 = more like stripes
+#if defined(JELLY) || defined(XMAS)
+#define STEPS       5
 #else
-#define STEPS       3
+#define STEPS       1
 #endif
 
 void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
@@ -70,10 +72,11 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
 #endif
   FastLED.show();
 
-#ifndef GLOWSTAFF
+//#if defined(GLOWSTAFF) || defined(BALLOON)
+#if defined(GLOWSTAFF)
   taskLedModeSelect.setInterval( beatsin16( tapTempo.getBPM(), 1500, 50000) ) ;
 #else
-  taskLedModeSelect.setInterval( tapTempo.getBeatLength()*20 ) ;
+  taskLedModeSelect.setInterval( tapTempo.getBeatLength()*50 ) ;
 #endif
 }
 
@@ -89,7 +92,7 @@ void fadeGlitter() {
 
 #ifdef RT_DISCO_GLITTER
 void discoGlitter() {
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  fill_solid(leds, NUM_LEDS, CRGB::White);
 #ifdef USING_MPU
   addGlitter(map( constrain( activityLevel(), 0, 3000), 0, 3000, 100, 255 ));
 #else

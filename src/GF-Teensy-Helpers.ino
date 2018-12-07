@@ -298,3 +298,10 @@ void serialEvent() {
     }
   }
 }
+
+void autoAdvanceLedMode() {
+  ledMode++;
+  if (ledMode == NUMROUTINES ) {
+    ledMode = 0;
+  }
+}

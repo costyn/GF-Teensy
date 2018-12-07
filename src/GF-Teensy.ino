@@ -22,7 +22,9 @@
 //#define RING
 //#define BALLOON
 //#define GLOWSTAFF
-#define GLOWFUR
+//#define GLOWFUR
+#define XMAS
+
 
 #if defined(RING) or defined(NEWFAN)
 //#define USING_MPU
@@ -71,7 +73,6 @@
 #ifdef NEO_PIXEL
 #define CHIPSET     WS2812B
 #define LED_PIN     17   // which pin your Neopixels are connected to
-//#define NUM_LEDS    16   // how many LEDs you have
 #define COLOR_ORDER GRB  // Try mixing up the letters (RGB, GBR, BRG, etc) for a whole new world of color combinations
 #endif
 
@@ -102,12 +103,34 @@
 #define NUM_LEDS 64
 #endif
 
+#ifdef BALLOON
+#define NUM_LEDS 19
+#define BUTTON_PIN 18
+#define DEFAULT_BRIGHTNESS 250
+#endif
+
 #ifdef JELLY
 #define NUM_LEDS 64
 #define BUTTON_PIN 18
-#define DEFAULT_BPM 40
+#define DEFAULT_BPM 30
+#define DEFAULT_BRIGHTNESS 100
+#define AUTOADVANCE // automatically go to next routine (press the button)
 #endif
 
+#ifdef XMAS
+#define NUM_LEDS 50
+#define BUTTON_PIN 18
+#define DEFAULT_BPM 30
+#define DEFAULT_BRIGHTNESS 255
+#define AUTOADVANCE // automatically go to next routine (press the button)
+#endif
+
+#ifdef HAT
+#define NUM_LEDS 60
+#define DEFAULT_BPM 60
+#define DEFAULT_BRIGHTNESS 50
+#define AUTOADVANCE // automatically go to next routine (press the button)
+#endif
 
 #ifdef GLOWSTAFF
 // #define LED_PIN     17   // which pin your Neopixels are connected to
@@ -123,7 +146,7 @@
 
 
 
-#define NUM_LEDS 139
+//#define NUM_LEDS 139
 CRGB leds[NUM_LEDS];
 uint8_t maxBright = DEFAULT_BRIGHTNESS ;
 
@@ -142,7 +165,7 @@ boolean stringComplete = false;  // whether the string is complete
 // and staying within AVR328's flash/ram limits.
 
 #define RT_P_RB_STRIPE
-#define RT_P_OCEAN
+//#define RT_P_OCEAN
 #define RT_P_HEAT
 #define RT_P_LAVA
 #define RT_P_PARTY
@@ -166,7 +189,7 @@ boolean stringComplete = false;  // whether the string is complete
 #endif
 //#define RT_HEARTBEAT
 #define RT_FASTLOOP
-#define RT_FASTLOOP2
+//#define RT_FASTLOOP2
 #define RT_PENDULUM
 #define RT_BOUNCEBLEND
 #define RT_JUGGLE_PAL
@@ -324,6 +347,10 @@ Task taskLedModeSelect( LEDMODE_SELECT_DEFAULT_INTERVAL, TASK_FOREVER, &ledModeS
 void checkButtonPress() ;                       // prototype method
 Task taskCheckButtonPress( TASK_CHECK_BUTTON_PRESS_INTERVAL, TASK_FOREVER, &checkButtonPress);
 
+#ifdef AUTOADVANCE
+void autoAdvanceLedMode() ;                       // prototype method
+Task taskAutoAdvanceLedMode( 30 * TASK_SECOND, TASK_FOREVER, &autoAdvanceLedMode);
+#endif
 
 // ==================================================================== //
 // ===                      MPU6050 stuff                         ===== //
@@ -407,6 +434,10 @@ DEBUG_PRINTLN( F("Added LEDs")) ;
   pinMode(15, OUTPUT);
   digitalWrite(15, LOW);
 #endif
+#ifdef XMAS
+  pinMode(16, OUTPUT);
+  digitalWrite(16, LOW);
+#endif
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
 
@@ -428,6 +459,10 @@ DEBUG_PRINTLN( NUMROUTINES ) ;
   runner.addTask(taskCheckButtonPress);
   taskCheckButtonPress.enable() ;
 
+#ifdef AUTOADVANCE
+  runner.addTask(taskAutoAdvanceLedMode);
+  taskAutoAdvanceLedMode.enable() ;
+#endif
 
   // ==================================================================== //
   // ==================================================================== //
@@ -496,7 +531,7 @@ DEBUG_PRINTLN( NUMROUTINES ) ;
   taskPrintDebugging.enable() ;
 #endif
 
-  tapTempo.setMaxBPM(DEFAULT_BPM);
+  tapTempo.setBPM(DEFAULT_BPM);
   inputString.reserve(200);
 }  // end setup()
 
