@@ -1,3 +1,5 @@
+#include <FastLED.h>
+
 #define P_MAX_POS_ACCEL 3000
 
 // How wide the bands of color are.  1 = more like a gradient, 10 = more like stripes
@@ -92,7 +94,7 @@ void fadeGlitter() {
 
 #ifdef RT_DISCO_GLITTER
 void discoGlitter() {
-  fill_solid(leds, NUM_LEDS, CRGB::White);
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
 #ifdef USING_MPU
   addGlitter(map( constrain( activityLevel(), 0, 3000), 0, 3000, 100, 255 ));
 #else
@@ -885,7 +887,7 @@ void threeSinPal() {
 void colorGlow() {
   static uint8_t paletteColorIndex = 0 ;
   static bool indexUpdated = false ;
-  uint8_t brightness = beatsin8( 30, 0, 255 ) ;
+  uint8_t brightness = beatsin8( tapTempo.getBPM(), 0, 255 ) ;
 
   // To ensure we update paletteColorIndex only once per brightness cycle, use the flag indexUpdated.
   if( brightness < 5 and not indexUpdated ) {
@@ -908,7 +910,6 @@ void colorGlow() {
 #endif
 
 #ifdef RT_FAN_WIPE
-#define NUM_BLADES 14
 void fanWipe() {
     uint8_t hue = beatsin8( 1, 0, 255) ;
 //    uint8_t vertIndex = lerp8by8( 0, 6, triwave8( taskLedModeSelect.getRunCounter() % 128 ) * 2 ) ;

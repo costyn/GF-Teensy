@@ -11,24 +11,9 @@
        - color rain https://www.youtube.com/watch?v=nHBImYTDZ9I  (for strip, not ring)
 */
 
-
 // Turn on microsecond resolution; needed to sync some routines to BPM
 #define _TASK_MICRO_RES
 #define _TASK_TIMECRITICAL
-//#define USING_MPU
-//#define JELLY
-//#define FAN
-//#define NEWFAN
-//#define RING
-//#define BALLOON
-//#define GLOWSTAFF
-//#define GLOWFUR
-#define XMAS
-
-
-#if defined(RING) or defined(NEWFAN)
-//#define USING_MPU
-#endif
 
 #include <FastLED.h>
 #include <TaskScheduler.h>
@@ -41,12 +26,10 @@
 
 #define DEFAULT_LED_MODE 1
 
-#if FASTLED_VERSION < 3001000
-#error "Requires FastLED 3.1 or later; check github for latest code."
-#endif
-
-// Uncomment for debug output to Serial.
+// Uncomment for debug output to Serial. Comment to make small(er) code :)
 #define DEBUG
+
+// Uncommment to get MPU debbuging:
 //#define DEBUG_WITH_TASK
 
 #ifdef DEBUG
@@ -60,13 +43,6 @@
 #endif
 
 #define TASK_RES_MULTIPLIER 1000
-
-#if defined(RING) || defined(GLOWSTAFF)
- #define SK9822
-#else
- #define NEO_PIXEL
-#endif
-
 
 //black green white red
 
@@ -83,68 +59,26 @@
 #define COLOR_ORDER BGR
 #endif
 
-#define DEFAULT_BRIGHTNESS 30  // 0-255, higher number is brighter; numbers above 200 will occassionally cause red-outs on strips
-#define DEFAULT_BPM 120
-#define BUTTON_PIN  16   // button is connected to pin 3 and GND
-#define BUTTON_LED_PIN 3   // pin to which the button LED is attached
-#define BPM_BUTTON_PIN 7  // button for adjusting BPM
-
-#ifdef GLOWFUR
-#define NUM_LEDS 45
-#define BUTTON_PIN 18
-#define BPM_BUTTON_PIN 19  // button for adjusting BPM
+// Sanity checks:
+#ifndef NUM_LEDS
+#error "Error: NUM_LEDS not defined"
 #endif
 
-#ifdef FAN
-#define NUM_LEDS 84
+#ifndef DEFAULT_BRIGHTNESS
+#error "Error: DEFAULT_BRIGHTNESS not defined"
 #endif
 
-#ifdef RING
-#define NUM_LEDS 64
+#ifndef BUTTON_PIN
+#error "Error: BUTTON_PIN not defined"
 #endif
 
-#ifdef BALLOON
-#define NUM_LEDS 19
-#define BUTTON_PIN 18
-#define DEFAULT_BRIGHTNESS 250
+#ifndef BPM_BUTTON_PIN
+#error "Error: BPM_BUTTON_PIN not defined"
 #endif
 
-#ifdef JELLY
-#define NUM_LEDS 64
-#define BUTTON_PIN 18
-#define DEFAULT_BPM 30
-#define DEFAULT_BRIGHTNESS 100
-#define AUTOADVANCE // automatically go to next routine (press the button)
+#ifndef DEFAULT_BPM
+#error "Error: DEFAULT_BPM not defined"
 #endif
-
-#ifdef XMAS
-#define NUM_LEDS 50
-#define BUTTON_PIN 18
-#define DEFAULT_BPM 30
-#define DEFAULT_BRIGHTNESS 255
-#define AUTOADVANCE // automatically go to next routine (press the button)
-#endif
-
-#ifdef HAT
-#define NUM_LEDS 60
-#define DEFAULT_BPM 60
-#define DEFAULT_BRIGHTNESS 50
-#define AUTOADVANCE // automatically go to next routine (press the button)
-#endif
-
-#ifdef GLOWSTAFF
-// #define LED_PIN     17   // which pin your Neopixels are connected to
-#define NUM_LEDS 139
-#define BUTTON_PIN  18   // button is connected to pin 3 and GN
-#endif
-
-#ifdef NEWFAN
-#define LED_PIN 11
-#define NUM_LEDS 72
-#define BUTTON_PIN  9   // button is connected to pin 3 and GND
-#endif
-
-
 
 //#define NUM_LEDS 139
 CRGB leds[NUM_LEDS];
@@ -158,54 +92,6 @@ ArduinoTapTempo tapTempo;
 String inputString = "";         // a String to hold incoming data
 boolean stringComplete = false;  // whether the string is complete
 
-
-// A-la-carte routine selection. Uncomment each define below to
-// include or not include the routine in the uploaded code.
-// Most are kept commented during development for less code to
-// and staying within AVR328's flash/ram limits.
-
-#define RT_P_RB_STRIPE
-//#define RT_P_OCEAN
-#define RT_P_HEAT
-#define RT_P_LAVA
-#define RT_P_PARTY
-#define RT_P_FOREST
-#define RT_TWIRL1
-#define RT_TWIRL2
-#define RT_TWIRL4
-#define RT_TWIRL6
-#define RT_TWIRL2_O
-#define RT_TWIRL4_O
-#define RT_TWIRL6_O
-#define RT_FADE_GLITTER
-#define RT_DISCO_GLITTER
-//#define RT_RACERS
-//#define RT_WAVE
-//#define RT_FIRE2012
-#ifdef USING_MPU
-#define RT_SHAKE_IT
-#define RT_STROBE1
-#define RT_GLED
-#endif
-//#define RT_HEARTBEAT
-#define RT_FASTLOOP
-//#define RT_FASTLOOP2
-#define RT_PENDULUM
-#define RT_BOUNCEBLEND
-#define RT_JUGGLE_PAL
-#define RT_NOISE_LAVA
-#define RT_NOISE_PARTY
-//#define RT_QUAD_STROBE
-//#define RT_PULSE_3
-#define RT_PULSE_5_1
-#define RT_PULSE_5_2
-#define RT_PULSE_5_3
-#define RT_THREE_SIN_PAL
-//#define RT_BLACK
-#define RT_COLOR_GLOW
-#ifdef NEWFAN
-//#define RT_FAN_WIPE
-#endif
 
 byte ledMode = DEFAULT_LED_MODE ; // Which mode do we start with
 
@@ -406,15 +292,8 @@ Task taskGetDMPData( 3 * TASK_RES_MULTIPLIER, TASK_FOREVER, &getDMPData);
 // #endif
 
 
-
-
 void setup() {
   delay( 1000 ); // power-up safety delay
-
-  // #ifdef DEBUG
-  // Serial.begin(115200) ;
-  // DEBUG_PRINTLN( F("Hello!")) ;
-  // #endif
 
 #ifdef NEO_PIXEL
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
@@ -425,11 +304,9 @@ void setup() {
 #endif
   FastLED.setBrightness(  maxBright );
 
-DEBUG_PRINTLN( F("Added LEDs")) ;
-
-//  FastLED.setDither( 0 );
-
   pinMode(BUTTON_PIN, INPUT_PULLUP);
+
+  // On these boards one of the button pins is connected to these, so we pull it low so when the button is pressed, the input pin goes low too.
 #ifdef BALLOON
   pinMode(15, OUTPUT);
   digitalWrite(15, LOW);
@@ -438,18 +315,19 @@ DEBUG_PRINTLN( F("Added LEDs")) ;
   pinMode(16, OUTPUT);
   digitalWrite(16, LOW);
 #endif
+
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
 
   pinMode(BPM_BUTTON_PIN, INPUT_PULLUP);
 
-
+// Not sure this does anything
   FastLED.setMaxPowerInVoltsAndMilliamps(5,475);
 
-#ifdef DEBUG
-DEBUG_PRINT( F("Starting up. Numroutines = ")) ;
-DEBUG_PRINTLN( NUMROUTINES ) ;
-#endif
+  #ifdef DEBUG
+  DEBUG_PRINT( F("Starting up. Numroutines = ")) ;
+  DEBUG_PRINTLN( NUMROUTINES ) ;
+  #endif
 
   /* Start the scheduler */
   runner.init();
@@ -465,6 +343,7 @@ DEBUG_PRINTLN( NUMROUTINES ) ;
 #endif
 
   // ==================================================================== //
+  // ============================ MPU Stuff ============================= //
   // ==================================================================== //
 
 #ifdef USING_MPU
@@ -494,7 +373,6 @@ DEBUG_PRINTLN( NUMROUTINES ) ;
 #ifdef NEWFAN
 //  Your offsets:	410	-255	1745	-114	19	-23
 // Data is printed as: acelX acelY acelZ giroX giroY giroZ
-
 
   mpu.setXAccelOffset(410 );
   mpu.setYAccelOffset(-255);
@@ -546,7 +424,7 @@ void loop() {
 
 
 void ledModeSelect() {
-
+  
   if ( strcmp(routines[ledMode], "p_rb") == 0  ) {
     FillLEDsFromPaletteColors(0) ;
 
@@ -737,21 +615,27 @@ void ledModeSelect() {
 
 #ifdef RT_NOISE_LAVA
   } else if ( strcmp(routines[ledMode], "noise_lava") == 0 ) {
-    fillnoise8( 0, beatsin8( tapTempo.getBPM(), 1, 25), 30, 1); // pallette, speed, scale, loop
+    if( tapTempo.getBPM() > 50 ) {
+      fillnoise8( 0, beatsin8( tapTempo.getBPM(), 1, 25), 30, 1); // pallette, speed, scale, loop
+    } else {
+      fillnoise8( 0, 4, 30, 1); // pallette, speed, scale, loop
+    }
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_NOISE_PARTY
   } else if ( strcmp(routines[ledMode], "noise_party") == 0 ) {
-    fillnoise8( 1, beatsin8( tapTempo.getBPM(), 1, 25), 30, 1); // pallette, speed, scale, loop
-    //    taskLedModeSelect.setInterval( beatsin16( tapTempo.getBPM(), 2000, 50000) ) ;
+    if( tapTempo.getBPM() > 50 ) {
+      fillnoise8( 1, beatsin8( tapTempo.getBPM(), 1, 25), 30, 1); // pallette, speed, scale, loop
+    } else {
+      fillnoise8( 1, 4, 30, 1); // pallette, speed, scale, loop
+    }
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_NOISE_OCEAN
   } else if ( strcmp(routines[ledMode], "noise_ocean") == 0 ) {
     fillnoise8( 2, beatsin8( tapTempo.getBPM(), 1, 25), 30, 1); // pallette, speed, scale, loop
-    //    taskLedModeSelect.setInterval( beatsin16( tapTempo.getBPM(), 2000, 50000) ) ;
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER ) ;
 #endif
 
