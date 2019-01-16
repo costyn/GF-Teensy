@@ -10,7 +10,7 @@
 volatile bool mpuInterrupt = false;     // indicates whether MPU interrupt pin has gone high
 void dmpDataReady() {
   mpuInterrupt = true;
-  //  DEBUG_PRINTLN(F(":"));
+  DEBUG_PRINTLN(F(":"));
 }
 
 

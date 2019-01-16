@@ -1,0 +1,43 @@
+
+Processing teensylc_glowstaff (platform: teensy; board: teensylc; framework: arduino)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/teensy/teensylc.html
+PLATFORM: Teensy > Teensy LC
+HARDWARE: MKL26Z64 48MHz 8KB RAM (62KB Flash)
+DEBUG: CURRENT(jlink) EXTERNAL(jlink)
+Converting GF-Teensy.ino
+Library Dependency Finder -> http://bit.ly/configure-pio-ldf
+LDF MODES: FINDER(chain) COMPATIBILITY(soft)
+Collected 105 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- <I2Cdevlib-MPU6050>
+|   |-- <I2Cdevlib-Core>
+|   |   |-- <Wire> 1.0
+|-- <SPI> 1.0
+|-- <TaskScheduler> 3.0.2
+|-- <I2Cdevlib-Core>
+|   |-- <Wire> 1.0
+|-- <FastLED> 3.2.1
+|   |-- <SoftwareSerial> 1.0
+|   |-- <DmxSimple> 3.1
+|-- <ArduinoTapTempo> 1.0
+|-- <Wire> 1.0
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/FastLED.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/bitswap.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/colorpalettes.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/colorutils.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/hsv2rgb.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/lib8tion.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/noise.cpp.o
+Compiling .pioenvs/teensylc_glowstaff/libdf8/FastLED_ID126/power_mgt.cpp.o
+
+============================================================================================================================ [SUMMARY] ============================================================================================================================
+Environment teensylc_newfan   	[SKIP]
+Environment teensylc_xmas     	[SKIP]
+Environment esp_glowhat       	[SKIP]
+Environment teensylc_glowhat  	[SKIP]
+Environment esp_hoop          	[SKIP]
+Environment trinket_hoop      	[SKIP]
+Environment teensylc_hoop     	[SKIP]

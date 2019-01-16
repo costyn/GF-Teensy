@@ -2,20 +2,25 @@
 #define GLOWSTAFF
 
 // ---- LED stuff ----
-#define SK9822
+#define APA_102
+#define MY_DATA_PIN 11
+#define MY_CLOCK_PIN 13
 #define NUM_LEDS 139
-#define DEFAULT_BRIGHTNESS 50
+#define DEFAULT_BRIGHTNESS 20
 
 // ---- Buttons ----
-#define BUTTON_PIN 18
+#define BUTTON_PIN 14
 #define BUTTON_LED_PIN 3
 #define BPM_BUTTON_PIN 7
 
 // ---- Misc ----
-#define DEFAULT_BPM 60
+#define DEFAULT_BPM 30
+#define USING_MPU
+#define AUTOADVANCE
 
 
 // ---- Patterns ----
+#define RT_FIRE2012
 #define RT_P_RB_STRIPE
 #define RT_P_OCEAN
 #define RT_P_HEAT
@@ -31,7 +36,6 @@
 #define RT_TWIRL6_O
 #define RT_FADE_GLITTER
 #define RT_DISCO_GLITTER
-#define RT_HEARTBEAT
 #define RT_FASTLOOP
 #define RT_FASTLOOP2
 #define RT_PENDULUM
@@ -44,3 +48,10 @@
 #define RT_PULSE_5_3
 #define RT_THREE_SIN_PAL
 #define RT_COLOR_GLOW
+#define RT_BOUNCYBALLS
+// --- MPU Patterns ----
+#ifdef USING_MPU
+#define RT_SHAKE_IT
+#define RT_STROBE1
+#define RT_GLED
+#endif

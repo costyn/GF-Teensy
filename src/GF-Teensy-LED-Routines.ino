@@ -1,4 +1,5 @@
 #include <FastLED.h>
+#include <math.h>
 
 #define P_MAX_POS_ACCEL 3000
 
@@ -75,7 +76,7 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
   FastLED.show();
 
 //#if defined(GLOWSTAFF) || defined(BALLOON)
-#if defined(GLOWSTAFF)
+#if defined(RING)
   taskLedModeSelect.setInterval( beatsin16( tapTempo.getBPM(), 1500, 50000) ) ;
 #else
   taskLedModeSelect.setInterval( tapTempo.getBeatLength()*50 ) ;
@@ -139,57 +140,63 @@ void strobe2() {
 
 
 #ifdef RT_FIRE2012
-#define COOLING  55
-#define SPARKING 120
-#define FIRELEDS round( NUM_LEDS / 2 )
+// Fire2012 by Mark Kriegsman, July 2012
 
-// Adapted Fire2012. This version starts in the middle and mirrors the fire going down to both ends.
-// Works well with the Adafruit glow fur scarf.
-// FIRELEDS defines the position of the middle LED.
+// COOLING: How much does the air cool as it rises?
+// Less cooling = taller flames.  More cooling = shorter flames.
+// Default 50, suggested range 20-100
+#define COOLING  75
+// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+// Default 120, suggested range 50-200.
+#define SPARKING 70
 
 void Fire2012()
 {
+  static bool gReverseDirection = true;
   // Array of temperature readings at each simulation cell
-  static byte heat[FIRELEDS];
+    static byte heat[NUM_LEDS];
 
-  // Step 1.  Cool down every cell a little
-  for ( uint8_t i = 0; i < FIRELEDS; i++) {
-    heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / FIRELEDS) + 2));
-  }
+    // Step 1.  Cool down every cell a little
+      for( int i = 0; i < NUM_LEDS; i++) {
+        heat[i] = qsub8( heat[i],  random8(0, ((COOLING * 10) / NUM_LEDS) + 2));
+      }
 
-  // Step 2.  Heat from each cell drifts 'up' and diffuses a little
-  for ( int k = FIRELEDS - 1; k >= 2; k--) {
-    heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
-  }
+      // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+      for( int k= NUM_LEDS - 1; k >= 2; k--) {
+        heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2] ) / 3;
+      }
 
-  // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
-  if ( random8() < SPARKING ) {
-    int y = random8(7);
-    heat[y] = qadd8( heat[y], random8(160, 255) );
-  }
+      // Step 3.  Randomly ignite new 'sparks' of heat near the bottom
+      if( random8() < SPARKING ) {
+        int y = random8(7);
+        heat[y] = qadd8( heat[y], random8(160,255) );
+      }
 
-  // Step 4.  Map from heat cells to LED colors
-  for ( int j = FIRELEDS; j < NUM_LEDS; j++) {
-    int heatIndex = j - FIRELEDS ;
-    CRGB color = HeatColor( heat[heatIndex]);
-    leds[j] = color;
-  }
-
-  //  "Reverse" Mapping needed:
-  //    ledindex 44 = heat[0]
-  //    ledindex 43 = heat[1]
-  //    ledindex 42 = heat[2]
-  //    ...
-  //    ledindex 1 = heat[43]
-  //    ledindex 0 = heat[44]
-
-  for ( int j = 0; j <= FIRELEDS; j++) {
-    int ledIndex = FIRELEDS - j ;
-    CRGB color = HeatColor( heat[j]);
-    leds[ledIndex] = color;
-  }
+      // Step 4.  Map from heat cells to LED colors
+      for( int j = 0; j < NUM_LEDS; j++) {
+        CRGB color = HeatColor( heat[j]);
+        int pixelnumber;
+        if( gReverseDirection ) {
+          pixelnumber = (NUM_LEDS-1) - j;
+        } else {
+          pixelnumber = j;
+        }
+        leds[pixelnumber] = color;
+      }
   FastLED.setBrightness( maxBright ) ;
   FastLED.show();
+
+  #ifdef USING_MPU
+    if ( isMpuUp() ) {
+      gReverseDirection = true;
+    } else if ( isMpuDown() ) {
+      gReverseDirection = false ;
+    }
+
+// map yprX to SPARKING
+  #endif
+
 
 } // end Fire2012
 #endif
@@ -930,4 +937,171 @@ void fanWipe() {
     FastLED.show() ;
     fadeToBlackBy(leds, NUM_LEDS, 25);
   }
+#endif
+
+#ifdef RT_DROPLETS
+//#define STOPPING
+void droplets() {
+  //  static long loopCounter = 0 ;
+  // static uint8_t droplet[] = { random8(0, NUM_LEDS - 1), random8(0, NUM_LEDS - 1), random8(0, NUM_LEDS - 1), random8(0, NUM_LEDS - 1) }; // Starting positions
+  static uint8_t droplet[] = { 1, 1, 1, 1 }; // Starting positions
+  static int dropletSpeed[] = { random8(1, 3), random8(1, 3) , random8(1, 3), random8(1, 3) }; // Starting speed
+  //static int dropletSpeed[] = { 1, 1, 1, 1 }; // Starting speed
+  const CRGB dropletColor[] = { CRGB::White, CRGB::White, CRGB::White, CRGB::White }; // droplet colors
+
+  #define NUM_DROPLETS sizeof(droplet) //array size
+
+  for ( uint8_t i = 0; i < NUM_DROPLETS ; i++ ) {
+    leds[droplet[i]] = dropletColor[i]; // Assign droplet color
+    leds[droplet[i]-1] = CRGB::Red ; // Assign tail
+
+    #ifdef STOPPING
+    if( random8(1,10) == 5 && dropletSpeed[i] < 2 ) {
+      dropletSpeed[i] = random8(2, 3);
+    } else if( random8(1,20) == 5 && dropletSpeed[i] >= 2 ) {
+      dropletSpeed[i] = random8(0, 1);
+    }
+
+    if( random8(1,50) == 5 ) {
+      droplet[i] = random8(1, NUM_LEDS - 10) ;
+    }
+    #endif
+
+    // If taskLedModeSelect.getRunCounter() is evenly divisible by 'speed' then check if we've reached the end (if so, pick a new random starting point)
+    if( ( taskLedModeSelect.getRunCounter() % dropletSpeed[i]) == 0 ) {
+      if ( droplet[i] + 1 >= NUM_LEDS) {
+        droplet[i] = random8(1, 30) ;
+      } else {
+        droplet[i] += 1 ;
+      }
+
+    }
+  }
+
+  FastLED.setBrightness( maxBright ) ;
+  FastLED.show();
+  fadeall(210);
+} // end droplets()
+#endif
+
+#if defined(RT_POVPATTERNS) && defined(_TASK_MICRO_RES)
+
+#define redVal   0
+#define greenVal 1
+#define blueVal  2
+
+#define width(array) sizeof(array) / sizeof(array[0])
+
+void povPatterns(unsigned long time, const char pattern[][NUM_LEDS][3], int pictureWidth)
+{
+  unsigned long currentTime = millis();
+
+  while (millis() < currentTime + (time * 1000))
+  {
+    for(int slice = 0; slice < pictureWidth; slice ++)
+    {
+      for(uint8_t LED = NUM_LEDS-1; LED > -1; LED --) // LED number
+      {
+        leds[LED].setRGB(pattern[slice] [LED] [redVal],
+                               pattern[slice] [LED] [greenVal],
+                               pattern[slice] [LED] [blueVal]);
+      }
+      FastLED.show();
+      taskLedModeSelect.delay(800); // How wide the image is
+//      yield();
+    }
+    taskLedModeSelect.delay(1000); // Gap between images
+//    yield();
+  }
+}
+
+#endif
+
+
+#ifdef RT_BOUNCYBALLS
+
+// Code by Danny Wilson
+// https://github.com/daterdots/LEDs/blob/master/BouncingBalls2014/BouncingBalls2014.ino
+
+#define GRAVITY           -1              // Downward (negative) acceleration of gravity in m/s^2
+#define h0                1                  // Starting height, in meters, of the ball (strip length)
+#define NUM_BALLS         3                  // Number of bouncing balls you want (recommend < 7, but 20 is fun in its own way)
+
+float h[NUM_BALLS] ;                         // An array of heights
+float vImpact0 = sqrt( -2 * GRAVITY * h0 );  // Impact velocity of the ball when it hits the ground if "dropped" from the top of the strip
+float vImpact[NUM_BALLS] ;                   // As time goes on the impact velocity will change, so make an array to store those values
+float tCycle[NUM_BALLS] ;                    // The time since the last time the ball struck the ground
+int   pos[NUM_BALLS] ;                       // The integer position of the dot on the strip (LED index)
+long  tLast[NUM_BALLS] ;                     // The clock time of the last ground strike
+float COR[NUM_BALLS] ;                       // Coefficient of Restitution (bounce damping)
+boolean firstRun = true ;                    // ugly way to run init only once :(
+
+void bouncyBalls() {
+  if( firstRun ) {                             // Only run once
+    for (int i = 0 ; i < NUM_BALLS ; i++) {    // Initialize variables
+      tLast[i] = millis();
+      h[i] = h0;
+      pos[i] = 0;                              // Balls start on the ground
+      vImpact[i] = vImpact0;                   // And "pop" up at vImpact0
+      tCycle[i] = 0;
+      COR[i] = 0.90 - float(i)/pow(NUM_BALLS,2);
+    }
+    firstRun = false ;
+  }
+
+  for (int i = 0 ; i < NUM_BALLS ; i++) {
+    tCycle[i] =  millis() - tLast[i] ;     // Calculate the time since the last time the ball was on the ground
+
+    // A little kinematics equation calculates positon as a function of time, acceleration (gravity) and intial velocity
+    h[i] = 0.5 * GRAVITY * pow( tCycle[i]/1000 , 2.0 ) + vImpact[i] * tCycle[i]/1000;
+
+    if ( h[i] < 0 ) {
+      h[i] = 0;                            // If the ball crossed the threshold of the "ground," put it back on the ground
+      vImpact[i] = COR[i] * vImpact[i] ;   // and recalculate its new upward velocity as it's old velocity * COR
+      tLast[i] = millis();
+
+      if ( vImpact[i] < 0.01 ) vImpact[i] = vImpact0;  // If the ball is barely moving, "pop" it back up at vImpact0
+    }
+    pos[i] = round( h[i] * (NUM_LEDS - 1) / h0);       // Map "h" to a "pos" integer index position on the LED strip
+  }
+
+  //Choose color of LEDs, then the "pos" LED on
+  for (int i = 0 ; i < NUM_BALLS ; i++) {
+    leds[pos[i]] = CHSV( uint8_t (i * 40) , 255, 255);
+  }
+  FastLED.show();
+  //Then off for the next loop around
+  for (int i = 0 ; i < NUM_BALLS ; i++) {
+    leds[pos[i]] = CRGB::Black;
+  }
+}
+
+#endif
+
+#ifdef RT_DROPLETS2
+  // pos = 0.5 * 9.8 * time
+
+void droplets2() {
+  static int pos = 0 ; // start from top
+  static long dropStart = millis() ;
+  static long elapsed ;
+
+  elapsed = millis() - dropStart ;
+
+  pos = round( 0.5 * 1 * elapsed * elapsed / 10000 ) ;
+//  DEBUG_PRINTLN(pos);
+
+  if( pos >= NUM_LEDS ) {
+//    delay(200);
+    FastLED.show() ;
+    pos = 0 ; // reset to top
+    dropStart = millis() ;
+  }
+
+  fadeall(120);
+
+  leds[pos] = CRGB::White ;
+  FastLED.show() ;
+}
+
 #endif

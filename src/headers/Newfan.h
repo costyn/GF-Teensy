@@ -2,10 +2,11 @@
 #define NEWFAN
 
 // ---- LED stuff ----
-#define LED_PIN 11
-#define SK9822
+#define APA_102
+#define MY_DATA_PIN 11  /// DATA_PIN and CLOCK_PIN are reserved.
+#define MY_CLOCK_PIN 13
 #define NUM_LEDS 72
-#define DEFAULT_BRIGHTNESS 50
+#define DEFAULT_BRIGHTNESS 40
 
 // ---- Buttons ----
 #define BUTTON_PIN 9
@@ -14,7 +15,7 @@
 
 // ---- Misc ----
 #define DEFAULT_BPM 120
-#define USING_MPU
+//#define USING_MPU
 
 // ---- Patterns ----
 #define RT_P_RB_STRIPE
@@ -48,6 +49,8 @@
 #define RT_FAN_WIPE
 #define NUM_BLADES 14
 // --- MPU Patterns ----
+#ifdef USING_MPU
 #define RT_SHAKE_IT
 #define RT_STROBE1
 #define RT_GLED
+#endif

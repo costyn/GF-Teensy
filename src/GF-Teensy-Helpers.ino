@@ -151,6 +151,8 @@ void addGlitter( fract8 chanceOfGlitter)
 #define LONG_PRESS_MIN_TIME 500  // minimum time for a long press
 #define SHORT_PRESS_MIN_TIME 70   // minimum time for a short press - debounce
 
+#ifdef BUTTON_PIN
+
 void checkButtonPress() {
   static unsigned long buttonTimer = 0;
   static boolean buttonActive = false;
@@ -199,12 +201,14 @@ void checkButtonPress() {
     }
   }
 
+#ifdef BPM_BUTTON_PIN
   if (digitalRead(BPM_BUTTON_PIN) == LOW) {
     tapTempo.update(true);
 //    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
   } else {
     tapTempo.update(false);
   }
+#endif
 
   serialEvent() ;
   if (stringComplete) {
@@ -236,10 +240,10 @@ void checkButtonPress() {
   }
 
 }
+#endif
 
 // Only use if no MPU present:
-#ifndef USING_MPU
-
+#if !defined(USING_MPU) && defined(BUTTON_PIN)
 void cycleBrightness() {
   static uint8_t currentBright = DEFAULT_BRIGHTNESS ;
 

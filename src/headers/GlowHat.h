@@ -1,10 +1,13 @@
 // Lightwalk Hat
-#define GLOWFUR
+#define GLOWSTAFF
 
 // ---- LED stuff ----
 #define NEO_PIXEL
+#define LED_PIN     17   // which pin your Neopixels are connected to
+// #define LED_PIN     2   // which pin your Neopixels are connected to
 #define NUM_LEDS 60
 #define DEFAULT_BRIGHTNESS 40
+#define DEFAULT_LED_MODE 1
 
 // ---- Buttons ----
 #define BUTTON_PIN 18
@@ -30,10 +33,6 @@
 #define RT_TWIRL4_O
 #define RT_TWIRL6_O
 #define RT_FADE_GLITTER
-#define RT_DISCO_GLITTER
-#define RT_HEARTBEAT
-#define RT_FASTLOOP
-#define RT_FASTLOOP2
 #define RT_PENDULUM
 #define RT_BOUNCEBLEND
 #define RT_JUGGLE_PAL
@@ -43,4 +42,4 @@
 #define RT_PULSE_5_2
 #define RT_PULSE_5_3
 #define RT_THREE_SIN_PAL
-#define RT_COLOR_GLOW
+#define RT_DROPLETS

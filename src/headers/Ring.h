@@ -3,6 +3,7 @@
 
 // ---- LED stuff ----
 #define NEO_PIXEL
+#define LED_PIN     17   // which pin your Neopixels are connected to
 #define NUM_LEDS 64
 #define DEFAULT_BRIGHTNESS 50
 
@@ -32,7 +33,6 @@
 #define RT_TWIRL6_O
 #define RT_FADE_GLITTER
 #define RT_DISCO_GLITTER
-#define RT_HEARTBEAT
 #define RT_FASTLOOP
 #define RT_FASTLOOP2
 #define RT_PENDULUM

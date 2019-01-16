@@ -3,6 +3,7 @@
 
 // ---- LED stuff ----
 #define NEO_PIXEL
+#define LED_PIN     17   // which pin your Neopixels are connected to
 #define NUM_LEDS 19
 #define DEFAULT_BRIGHTNESS 255
 

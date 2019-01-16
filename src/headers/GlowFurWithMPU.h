@@ -1,7 +1,8 @@
 // ==== Glow Fur (the original) ====
 
 // ---- LED stuff ----
-#define WS2812B
+#define NEO_PIXEL
+#define LED_PIN     17   // which pin your Neopixels are connected to
 #define NUM_LEDS 45
 #define DEFAULT_BRIGHTNESS 50
 
