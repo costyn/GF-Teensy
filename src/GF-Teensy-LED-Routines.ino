@@ -76,7 +76,7 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
   FastLED.show();
 
 //#if defined(GLOWSTAFF) || defined(BALLOON)
-#if defined(RING)
+#if defined(RING) || defined( HOOP )
   taskLedModeSelect.setInterval( beatsin16( tapTempo.getBPM(), 1500, 50000) ) ;
 #else
   taskLedModeSelect.setInterval( tapTempo.getBeatLength()*50 ) ;
@@ -87,7 +87,8 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
 #ifdef RT_FADE_GLITTER
 void fadeGlitter() {
   addGlitter(70);
-  FastLED.setBrightness( maxBright ) ;
+  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
+  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   FastLED.show();
   fadeToBlackBy(leds, NUM_LEDS, 50);
 }
@@ -427,7 +428,8 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
     }
 
   }
-  FastLED.setBrightness( maxBright ) ;
+  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
+  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   FastLED.show();
 //  taskLedModeSelect.setInterval( 1 * TASK_RES_MULTIPLIER ) ;
 }
@@ -554,7 +556,8 @@ void fastLoop(bool reverse) {
   fillGradientRing(startP, CHSV(hue, 255, 0), startP + FL_MIDPOINT, CHSV(hue, 255, 255));
   fillGradientRing(startP + FL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + FL_LENGHT, CHSV(hue, 255, 0));
 
-  FastLED.setBrightness( maxBright ) ;
+  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
+  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   FastLED.show();
   hue++  ;
 
@@ -990,8 +993,6 @@ void droplets() {
 #define greenVal 1
 #define blueVal  2
 
-#define width(array) sizeof(array) / sizeof(array[0])
-
 void povPatterns(unsigned long time, const char pattern[][NUM_LEDS][3], int pictureWidth)
 {
   unsigned long currentTime = millis();
@@ -1019,7 +1020,6 @@ void povPatterns(unsigned long time, const char pattern[][NUM_LEDS][3], int pict
 
 
 #ifdef RT_BOUNCYBALLS
-
 // Code by Danny Wilson
 // https://github.com/daterdots/LEDs/blob/master/BouncingBalls2014/BouncingBalls2014.ino
 
@@ -1069,6 +1069,9 @@ void bouncyBalls() {
   for (int i = 0 ; i < NUM_BALLS ; i++) {
     leds[pos[i]] = CHSV( uint8_t (i * 40) , 255, 255);
   }
+
+  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
+  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   FastLED.show();
   //Then off for the next loop around
   for (int i = 0 ; i < NUM_BALLS ; i++) {

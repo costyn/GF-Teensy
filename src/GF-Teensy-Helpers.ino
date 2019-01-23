@@ -305,6 +305,11 @@ void serialEvent() {
 
 void autoAdvanceLedMode() {
   ledMode++;
+  if ( strcmp(routines[ledMode], "jugglePal") == 0 ) {
+    taskAutoAdvanceLedMode.setInterval( TASK_SECOND * 60 ) ;
+  } else {
+    taskAutoAdvanceLedMode.setInterval( TASK_SECOND * 30 ) ;
+  }
   if (ledMode == NUMROUTINES ) {
     ledMode = 0;
   }

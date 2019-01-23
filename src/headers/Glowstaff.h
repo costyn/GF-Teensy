@@ -14,9 +14,9 @@
 #define BPM_BUTTON_PIN 7
 
 // ---- Misc ----
-#define DEFAULT_BPM 30
-#define USING_MPU
-#define AUTOADVANCE
+#define DEFAULT_BPM 60
+// #define USING_MPU
+//#define AUTOADVANCE
 
 
 // ---- Patterns ----
@@ -49,6 +49,7 @@
 #define RT_THREE_SIN_PAL
 #define RT_COLOR_GLOW
 #define RT_BOUNCYBALLS
+#define RT_DROPLETS
 // --- MPU Patterns ----
 #ifdef USING_MPU
 #define RT_SHAKE_IT
