@@ -97,7 +97,7 @@ void getYPRAccel() {
 
     #define RANGE 90
     int conYprX = constrain( yprX, initialYaw - RANGE, initialYaw + RANGE) ;
-    maxBright = map( conYprX, initialYaw - RANGE, initialYaw + RANGE, 1, 255) ;
+    currentBrightness = map( conYprX, initialYaw - RANGE, initialYaw + RANGE, 1, 255) ;
      // DEBUG_PRINT(F("\t"));
      // DEBUG_PRINT(yprX);
      // DEBUG_PRINT(F("\t"));
@@ -105,7 +105,7 @@ void getYPRAccel() {
      // DEBUG_PRINT(F("\t"));
      // DEBUG_PRINT(conYprX);
      // DEBUG_PRINT(F("\t"));
-     // DEBUG_PRINT(maxBright);
+     // DEBUG_PRINT(currentBrightness);
      // DEBUG_PRINT(F("\t"));
      // DEBUG_PRINTLN();
   }
@@ -139,13 +139,14 @@ bool isTilted() {
 }
 
 // check if MPU is pitched up
+
 bool isMpuUp() {
-  return yprZ > 90 ;
+  return yprZ < 90 ;
 }
 
 // check if MPU is pitched down
 bool isMpuDown() {
-  return yprZ < 90 ;
+  return yprZ > 90 ;
 }
 
 

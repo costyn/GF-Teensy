@@ -44,6 +44,8 @@
 #define TASK_RES_MULTIPLIER 1000
 #endif
 
+#define BRIGHTFACTOR 0.2
+
 //black green white red
 
 #ifdef NEO_PIXEL
@@ -73,7 +75,7 @@
 
 //#define NUM_LEDS 139
 CRGB leds[NUM_LEDS];
-uint8_t maxBright = DEFAULT_BRIGHTNESS ;
+uint8_t currentBrightness = DEFAULT_BRIGHTNESS ;
 
 // BPM and button stuff
 boolean longPressActive = false;
@@ -216,6 +218,9 @@ const char *routines[] = {
 #ifdef RT_BOUNCYBALLS
   "bouncyballs",
 #endif
+#ifdef RT_CIRC_LOADER
+  "circloader",
+#endif
 #ifdef RT_POVPATTERNS
   "povpatterns",
 #endif
@@ -313,10 +318,10 @@ void setup() {
 
   #ifdef APA_102
   // Some APA102's require a very low data rate or they start flickering. Shitty quality LEDs? Wiring? Level shifter??
-  FastLED.addLeds<CHIPSET, MY_DATA_PIN, MY_CLOCK_PIN, COLOR_ORDER, DATA_RATE_MHZ(6)>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  FastLED.addLeds<CHIPSET, MY_DATA_PIN, MY_CLOCK_PIN, COLOR_ORDER, DATA_RATE_MHZ(2)>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   #endif
 
-  FastLED.setBrightness(  maxBright );
+  FastLED.setBrightness(  currentBrightness );
 
   #if defined(BUTTON_PIN)
   pinMode(BUTTON_PIN, INPUT_PULLUP);
@@ -341,6 +346,7 @@ void setup() {
   //FastLED.setMaxPowerInVoltsAndMilliamps(5,475);
 
   #ifdef DEBUG
+  Serial.begin(115200);
   DEBUG_PRINT( F("Starting up. Numroutines = ")) ;
   DEBUG_PRINTLN( NUMROUTINES ) ;
   #endif
@@ -361,6 +367,11 @@ void setup() {
   runner.addTask(taskAutoAdvanceLedMode);
   taskAutoAdvanceLedMode.enable() ;
 #endif
+
+
+// #ifdef ESP8266
+// WiFi.forceSleepBegin();
+// #endif
 
   // ==================================================================== //
   // ============================ MPU Stuff ============================= //
@@ -578,12 +589,6 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER ) ;
 #endif
 
-#ifdef RT_BLACK
-  } else if ( strcmp(routines[ledMode], "black") == 0 ) {
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
-    FastLED.show();
-    taskLedModeSelect.setInterval( 500 * TASK_RES_MULTIPLIER ) ;  // long because nothing is going on anyways.
-#endif
 
 #ifdef RT_RACERS
   } else if ( strcmp(routines[ledMode], "racers") == 0 ) {
@@ -750,6 +755,11 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER ) ;
 #endif
 
+#ifdef RT_CIRC_LOADER
+} else if ( strcmp(routines[ledMode], "circloader") == 0 ) {
+    circularLoader() ;
+    taskLedModeSelect.setInterval( 50 * TASK_RES_MULTIPLIER ) ;
+#endif
 
 #ifdef RT_POVPATTERNS
 } else if ( strcmp(routines[ledMode], "povpatterns") == 0 ) {
@@ -760,6 +770,12 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 30000 ) ; // microseconds ; fast needed for POV patterns
 #endif
 
-  }
+#ifdef RT_BLACK
+  } else if ( strcmp(routines[ledMode], "black") == 0 ) {
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    FastLED.show();
+    taskLedModeSelect.setInterval( 500 * TASK_RES_MULTIPLIER ) ;  // long because nothing is going on anyways.
+#endif
 
+  }
 }

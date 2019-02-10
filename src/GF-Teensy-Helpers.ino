@@ -185,6 +185,8 @@ void checkButtonPress() {
 //        taskLedModeSelect.enableIfNot() ;
       } else {
         if ( millis() - buttonTimer > SHORT_PRESS_MIN_TIME ) {
+          fill_solid(leds, NUM_LEDS, CRGB::Black);
+          FastLED.show() ;
           ledMode++;
           if (ledMode == NUMROUTINES ) {
             ledMode = 0;
@@ -195,20 +197,20 @@ void checkButtonPress() {
           DEBUG_PRINT(F(" mode ")) ;
           DEBUG_PRINTLN( ledMode ) ;
 
-//          FastLED.setBrightness( maxBright ) ; // reset it to 'default'
+//          FastLED.setBrightness( currentBright ) ; // reset it to 'default'
         }
       }
     }
   }
 
-#ifdef BPM_BUTTON_PIN
+  #ifdef BPM_BUTTON_PIN
   if (digitalRead(BPM_BUTTON_PIN) == LOW) {
     tapTempo.update(true);
 //    DEBUG_PRINTLN( tapTempo.getBPM() ) ;
   } else {
     tapTempo.update(false);
   }
-#endif
+  #endif
 
   serialEvent() ;
   if (stringComplete) {
@@ -229,9 +231,9 @@ void checkButtonPress() {
     }
     if( inputString.charAt(0) == 'm' ) {
       inputString.remove(0,1);
-      maxBright = inputString.toInt() ;
-      DEBUG_PRINT("MaxBright: ");
-      DEBUG_PRINTLN( maxBright ) ;
+      currentBrightness = inputString.toInt() ;
+      DEBUG_PRINT("currentBrightness: ");
+      DEBUG_PRINTLN( currentBrightness ) ;
     }
 
     // clear the string:
@@ -245,21 +247,12 @@ void checkButtonPress() {
 // Only use if no MPU present:
 #if !defined(USING_MPU) && defined(BUTTON_PIN)
 void cycleBrightness() {
-  static uint8_t currentBright = DEFAULT_BRIGHTNESS ;
-
-#if defined(FAN)
-  uint8_t deviceMaxBright = 75;
-#elif defined(GLOWSTAFF)
-  uint8_t deviceMaxBright = 150;
-#else
-  uint8_t deviceMaxBright = 255;
-#endif
-
+  static uint8_t lerpBrightness ;
 
   if ( taskCheckButtonPress.getRunCounter() % 100 ) {
-    maxBright = lerp8by8( 3, deviceMaxBright, quadwave8( currentBright )) ;
-    currentBright++ ;
-    DEBUG_PRINTLN( maxBright ) ;
+    currentBrightness = lerp8by8( 3, MAX_BRIGHTNESS, quadwave8( lerpBrightness )) ;
+    lerpBrightness++ ;
+    DEBUG_PRINTLN( currentBrightness ) ;
   }
 
 //  taskLedModeSelect.disable() ;
@@ -269,7 +262,7 @@ void cycleBrightness() {
 }
 #endif
 
-// Custom mod which always returns a positive number
+// Custom mod which always a positive number
 int mod(int x, int m) {
   return (x % m + m) % m;
 }
@@ -293,6 +286,7 @@ void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
     char inChar = (char)Serial.read();
+    Serial.print(inChar); // echo back what we wrote
     // add it to the inputString:
     inputString += inChar;
     // if the incoming character is a newline, set a flag so the main loop can
@@ -303,7 +297,10 @@ void serialEvent() {
   }
 }
 
+#ifdef AUTOADVANCE
 void autoAdvanceLedMode() {
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  FastLED.show() ; // clear the canvas - prevent power fluctuations if a next pattern has lots of brightness
   ledMode++;
   if ( strcmp(routines[ledMode], "jugglePal") == 0 ) {
     taskAutoAdvanceLedMode.setInterval( TASK_SECOND * 60 ) ;
@@ -314,3 +311,4 @@ void autoAdvanceLedMode() {
     ledMode = 0;
   }
 }
+#endif

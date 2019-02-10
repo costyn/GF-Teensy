@@ -1,6 +1,7 @@
 #include <FastLED.h>
 #include <math.h>
 
+
 #define P_MAX_POS_ACCEL 3000
 
 // How wide the bands of color are.  1 = more like a gradient, 10 = more like stripes
@@ -69,9 +70,9 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
   #endif
 
 #ifdef USING_MPU
-  FastLED.setBrightness( map( constrain(aaRealZ, 0, P_MAX_POS_ACCEL), 0, P_MAX_POS_ACCEL, maxBright, 10 )) ;
+  FastLED.setBrightness( map( constrain(aaRealZ, 0, P_MAX_POS_ACCEL), 0, P_MAX_POS_ACCEL, currentBrightness, 10 )) ;
 #else
-  FastLED.setBrightness( maxBright );
+  FastLED.setBrightness( currentBrightness );
 #endif
   FastLED.show();
 
@@ -87,8 +88,12 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
 #ifdef RT_FADE_GLITTER
 void fadeGlitter() {
   addGlitter(70);
-  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
-  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+  #ifdef ESP8266
+    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+  #else
+    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  #endif
   FastLED.show();
   fadeToBlackBy(leds, NUM_LEDS, 50);
 }
@@ -102,7 +107,7 @@ void discoGlitter() {
 #else
   addGlitter( 255 ) ;
 #endif
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 }
 #endif
@@ -121,7 +126,7 @@ void strobe1() {
   } else {
     fill_solid(leds, NUM_LEDS, CRGB::Black); // black
   }
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 }
 #endif
@@ -131,7 +136,7 @@ void strobe1() {
 
 void strobe2() {
   if ( activityLevel() > S_SENSITIVITY ) {
-    fill_solid(leds, NUM_LEDS, CHSV( map( yprX, 0, 360, 0, 255 ), 255, maxBright)); // yaw for color
+    fill_solid(leds, NUM_LEDS, CHSV( map( yprX, 0, 360, 0, 255 ), 255, currentBrightness)); // yaw for color
   } else {
     fadeall(120);
   }
@@ -185,7 +190,7 @@ void Fire2012()
         }
         leds[pixelnumber] = color;
       }
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 
   #ifdef USING_MPU
@@ -238,7 +243,7 @@ void racingLeds() {
     }
   }
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 } // end racers()
 #endif
@@ -253,7 +258,7 @@ void waveYourArms() {
   // Use yaw for color; use accelZ for brightness
   fill_solid(leds, NUM_LEDS, CHSV( map( yprX, 0, 360, 0, 255 ) , 255, map( constrain(aaRealZ, WAVE_MAX_NEG_ACCEL, WAVE_MAX_POS_ACCEL), WAVE_MAX_NEG_ACCEL, WAVE_MAX_POS_ACCEL, MIN_BRIGHT, 255 )) );
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 }
 #endif
@@ -292,7 +297,7 @@ void shakeIt() {
   }
 
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 }
 #endif
@@ -339,7 +344,7 @@ void whiteStripe() {
     taskWhiteStripe.setInterval(random16(4000, 10000)) ;
   }
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 }
 #endif
@@ -347,7 +352,7 @@ void whiteStripe() {
 
 #ifdef RT_GLED_ORIGINAL
 void gLedOrig() {
-  leds[lowestPoint()] = ColorFromPalette( PartyColors_p, taskLedModeSelect.getRunCounter(), maxBright, NOBLEND );
+  leds[lowestPoint()] = ColorFromPalette( PartyColors_p, taskLedModeSelect.getRunCounter(), currentBrightness, NOBLEND );
   FastLED.show();
   fadeToBlackBy(leds, NUM_LEDS, 200);
 }
@@ -362,7 +367,7 @@ void gLed() {
   static uint8_t hue = 0 ;
   fillGradientRing( ledPos, CHSV(hue, 255, 0) , ledPos + GLED_WIDTH , CHSV(hue, 255, 255) ) ;
   fillGradientRing( ledPos + GLED_WIDTH + 1, CHSV(hue, 255, 255), ledPos + GLED_WIDTH + GLED_WIDTH, CHSV(hue, 255, 0) ) ;
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
   hue++ ;
 }
@@ -428,8 +433,12 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
     }
 
   }
-  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
-  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+  #ifdef ESP8266
+    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+  #else
+    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  #endif
   FastLED.show();
 //  taskLedModeSelect.setInterval( 1 * TASK_RES_MULTIPLIER ) ;
 }
@@ -556,8 +565,12 @@ void fastLoop(bool reverse) {
   fillGradientRing(startP, CHSV(hue, 255, 0), startP + FL_MIDPOINT, CHSV(hue, 255, 255));
   fillGradientRing(startP + FL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + FL_LENGHT, CHSV(hue, 255, 0));
 
-  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
-  FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+  #ifdef ESP8266
+    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+  #else
+    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  #endif
   FastLED.show();
   hue++  ;
 
@@ -650,7 +663,7 @@ void fillnoise8(uint8_t currentPalette, uint8_t speed, uint8_t scale, boolean co
   }
   ihue += 1;
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 }
 #endif
@@ -669,7 +682,7 @@ void pendulum() {
   fillGradientRing(sPos1 + 11, CHSV(hue, 255, 255), sPos1 + 20, CHSV(hue, 255, 0));
   fillGradientRing(sPos2, CHSV(hue + 128, 255, 0), sPos2 + 10, CHSV(hue + 128, 255, 255));
   fillGradientRing(sPos2 + 11, CHSV(hue + 128, 255, 255), sPos2 + 20, CHSV(hue + 128, 255, 0));
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 } // end pendulum()
 #endif
@@ -685,7 +698,7 @@ void bounceBlend() {
   fillGradientRing(startLed, endclr, startLed + NUM_LEDS / 2, midclr);
   fillGradientRing(startLed + NUM_LEDS / 2 + 1, midclr, startLed + NUM_LEDS, endclr);
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 
   if ( (taskLedModeSelect.getRunCounter() % 10 ) == 0 ) {
@@ -745,7 +758,7 @@ void jugglePal() {                                             // A time (rather
     curhue += thisdiff;
   }
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 
 } // end jugglePal()
@@ -764,7 +777,7 @@ void quadStrobe() {
   fill_solid( leds, NUM_LEDS, CRGB::Black ) ;
   fillSolidRing( startP, startP + striplength, CHSV(0, 0, 255) ) ; // white
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 
   if ( striplength == 1 ) shift++ ; // shift the sequence on clockwise
@@ -787,7 +800,7 @@ void pulse3() {
   fillGradientRing(middle - width, CHSV(hue, 255, 0), middle, CHSV(hue, 255, 255));
   fillGradientRing(middle, CHSV(hue, 255, 255), middle + width, CHSV(hue, 255, 0));
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show() ;
 }
 #endif
@@ -817,7 +830,7 @@ void pulse5( uint8_t numPulses, boolean leadingDot) {
     }
   }
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show() ;
 }
 #endif
@@ -885,7 +898,7 @@ void threeSinPal() {
     }
   }
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
 
 } // threeSinPal()
@@ -914,7 +927,7 @@ void colorGlow() {
   fill_solid(leds, NUM_LEDS, ColorFromPalette( RainbowColors_p, paletteColorIndex, brightness, LINEARBLEND ));
   // fill_solid(leds, NUM_LEDS, CRGB::Blue);
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show() ;
 }
 #endif
@@ -936,7 +949,7 @@ void fanWipe() {
     //   leds[vertIndex-1] = CHSV(hue, 255, 255) ; // blade 0
     // }
 
-    FastLED.setBrightness( maxBright ) ;
+    FastLED.setBrightness( currentBrightness ) ;
     FastLED.show() ;
     fadeToBlackBy(leds, NUM_LEDS, 25);
   }
@@ -981,7 +994,7 @@ void droplets() {
     }
   }
 
-  FastLED.setBrightness( maxBright ) ;
+  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
   fadeall(210);
 } // end droplets()
@@ -1070,7 +1083,7 @@ void bouncyBalls() {
     leds[pos[i]] = CHSV( uint8_t (i * 40) , 255, 255);
   }
 
-  uint16_t extraBright = round(maxBright * 0.5) + maxBright ; // Add 50% brightness
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
   FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   FastLED.show();
   //Then off for the next loop around
@@ -1107,4 +1120,82 @@ void droplets2() {
   FastLED.show() ;
 }
 
+#endif
+
+
+#ifdef RT_CIRC_LOADER
+void circularLoader() {
+  uint8_t triwave = triwave8( taskLedModeSelect.getRunCounter() * 5 ) ;
+  uint8_t striplength = lerp8by8( 2, 20, triwave ) ;
+  static uint8_t startP = 50;
+
+  fill_solid( leds, NUM_LEDS, CRGB::Black ) ;
+  fillSolidRing( startP - striplength, startP, CHSV(0, 255, 255) ) ; // white
+
+  FastLED.setBrightness( currentBrightness ) ;
+  FastLED.show();
+  startP = startP + lerp8by8( 2, 5, triwave ) ;
+}
+#endif
+
+// TODO https://pastebin.com/LfBsPLRn  https://www.youtube.com/watch?v=IrMzopUe8F4
+
+
+#ifdef RT_BEATSIN_LOOPS
+
+#define FL_LENGHT 20   // how many LEDs should be in the "stripe"
+#define FL_MIDPOINT FL_LENGHT / 2
+#define MAX_LOOP_SPEED 5
+
+void beatSinLoops() {
+  static uint8_t hue = 0 ;
+
+  pos1 = beatsin8( 40, 0, NUM_LEDS - 1 );
+  pos2 = beatsin8( 42, 0, NUM_LEDS - 1 );
+  pos3 = beatsin8( 42, 0, NUM_LEDS - 1 );
+
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+
+  hue++  ;
+  fadeall(120);
+}
+#endif
+
+#if defined(RT_SINLOOP)
+
+#define SL_LENGHT 20   // how many LEDs should be in the "stripe"
+#define SL_MIDPOINT SL_LENGHT / 2
+#define MAX_LOOP_SPEED 5
+
+void fastLoop3(bool reverse) {
+  static int16_t startP1 = 0 ;
+  static int16_t startP2 = 0 ;
+  static int16_t startP3 = 0 ;
+  static uint8_t hue = 0 ;
+
+  startP1 = beatsin8( 40, 0, NUM_LEDS );  // start position
+  startP2 = beatsin8( 45, 0, NUM_LEDS );  // start position
+  startP3 = beatsin8( 42, 0, NUM_LEDS );  // start position
+
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  fillGradientRing(startP, CHSV(hue, 255, 0), startP + SL_MIDPOINT, CHSV(hue, 255, 255));
+  fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + SL_LENGHT, CHSV(hue, 255, 0));
+
+  fillGradientRing(startP2, CHSV(hue+30, 255, 0), startP2 + SL_MIDPOINT, CHSV(hue + 30, 255, 255));
+  fillGradientRing(startP2 + SL_MIDPOINT + 1, CHSV(hue+30, 255, 255), startP2 + SL_LENGHT, CHSV(hue + 30, 255, 0));
+
+  fillGradientRing(startP3, CHSV(hue+60, 255, 0), startP3 + SL_MIDPOINT, CHSV(hue + 60, 255, 255));
+  fillGradientRing(startP3 + SL_MIDPOINT + 1, CHSV(hue+60, 255, 255), startP3 + SL_LENGHT, CHSV(hue + 60, 255, 0));
+
+
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+  #ifdef ESP8266
+    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+  #else
+    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  #endif
+  FastLED.show();
+  hue++  ;
+
+}
 #endif

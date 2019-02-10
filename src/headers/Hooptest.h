@@ -6,7 +6,9 @@
 #define NUM_LEDS 55
 #define MY_DATA_PIN 11
 #define MY_CLOCK_PIN 13
+
 #define DEFAULT_BRIGHTNESS 50
+#define MAX_BRIGHTNESS 60
 #define DEFAULT_LED_MODE 1
 
 // ---- Buttons ----

@@ -7,6 +7,7 @@
 #define MY_CLOCK_PIN 13
 #define NUM_LEDS 72
 #define DEFAULT_BRIGHTNESS 40
+#define MAX_BRIGHTNESS 70
 
 // ---- Buttons ----
 #define BUTTON_PIN 9

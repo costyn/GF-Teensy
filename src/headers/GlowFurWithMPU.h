@@ -2,18 +2,20 @@
 
 // ---- LED stuff ----
 #define NEO_PIXEL
-#define LED_PIN     17   // which pin your Neopixels are connected to
-#define NUM_LEDS 45
-#define DEFAULT_BRIGHTNESS 50
+#define LED_PIN     2   // which pin your Neopixels are connected to
+#define NUM_LEDS 98
+#define DEFAULT_BRIGHTNESS 100
+#define MAX_BRIGHTNESS 250 // running this straight off the LiPo 4.2v. Need as much bright as we can get
 
 // ---- Buttons ----
-#define BUTTON_PIN 18
-#define BUTTON_LED_PIN 3
-#define BPM_BUTTON_PIN 19
+#define BUTTON_PIN 14
+#define BUTTON_LED_PIN 13
+// #define BPM_BUTTON_PIN 19
 
 // ---- Misc ----
 #define DEFAULT_BPM 120
 #define USING_MPU
+// #define AUTOADVANCE
 
 // ---- Patterns ----
 #define RT_P_RB_STRIPE
@@ -44,7 +46,14 @@
 #define RT_PULSE_5_3
 #define RT_THREE_SIN_PAL
 #define RT_COLOR_GLOW
+#define RT_BLACK
 // --- MPU Patterns ----
+#ifdef USING_MPU
 #define RT_SHAKE_IT
 #define RT_STROBE1
-#define RT_GLED
+//#define RT_GLED
+#endif
+
+// #ifdef ESP8266
+// #include <ESP8266WiFi.h>
+// #endif

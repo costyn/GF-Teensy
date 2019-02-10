@@ -6,7 +6,8 @@
 #define MY_DATA_PIN 11
 #define MY_CLOCK_PIN 13
 #define NUM_LEDS 139
-#define DEFAULT_BRIGHTNESS 20
+#define DEFAULT_BRIGHTNESS 10
+#define MAX_BRIGHTNESS 100  // 278 LEDs use a LOT of power (measured max 5A)
 
 // ---- Buttons ----
 #define BUTTON_PIN 14
@@ -18,9 +19,7 @@
 // #define USING_MPU
 //#define AUTOADVANCE
 
-
 // ---- Patterns ----
-#define RT_FIRE2012
 #define RT_P_RB_STRIPE
 #define RT_P_OCEAN
 #define RT_P_HEAT
@@ -34,6 +33,7 @@
 #define RT_TWIRL2_O
 #define RT_TWIRL4_O
 #define RT_TWIRL6_O
+#define RT_FIRE2012
 #define RT_FADE_GLITTER
 #define RT_DISCO_GLITTER
 #define RT_FASTLOOP

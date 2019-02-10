@@ -7,6 +7,7 @@
 // #define LED_PIN     2   // which pin your Neopixels are connected to
 #define NUM_LEDS 60
 #define DEFAULT_BRIGHTNESS 40
+#define MAX_BRIGHTNESS 250
 #define DEFAULT_LED_MODE 1
 
 // ---- Buttons ----
