@@ -19,6 +19,15 @@
 // #define USING_MPU
 //#define AUTOADVANCE
 
+// ---- MPU Calibration ----
+#define X_ACCEL_OFFSET  -235
+#define Y_ACCEL_OFFSET  2035
+#define Z_ACCEL_OFFSET  1104
+#define X_GYRO_OFFSET  100
+#define Y_GYRO_OFFSET  0
+#define Z_GYRO_OFFSET  36
+
+
 // ---- Patterns ----
 #define RT_P_RB_STRIPE
 #define RT_P_OCEAN

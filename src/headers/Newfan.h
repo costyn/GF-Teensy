@@ -18,6 +18,15 @@
 #define DEFAULT_BPM 120
 //#define USING_MPU
 
+// ---- MPU Calibration ----
+#define X_ACCEL_OFFSET  410
+#define Y_ACCEL_OFFSET  -255
+#define Z_ACCEL_OFFSET  1745
+#define X_GYRO_OFFSET  -114
+#define Y_GYRO_OFFSET  19
+#define Z_GYRO_OFFSET  -23
+
+
 // ---- Patterns ----
 #define RT_P_RB_STRIPE
 #define RT_P_OCEAN

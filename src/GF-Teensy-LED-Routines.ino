@@ -1083,7 +1083,7 @@ void bouncyBalls() {
     leds[pos[i]] = CHSV( uint8_t (i * 40) , 255, 255);
   }
 
-  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 20% brightness
   FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   FastLED.show();
   //Then off for the next loop around
@@ -1161,32 +1161,25 @@ void beatSinLoops() {
 }
 #endif
 
+
 #if defined(RT_SINLOOP)
 
 #define SL_LENGHT 20   // how many LEDs should be in the "stripe"
 #define SL_MIDPOINT SL_LENGHT / 2
-#define MAX_LOOP_SPEED 5
+#define SL_NUMSTRIPES 3
 
-void fastLoop3(bool reverse) {
+void fastLoop3() {
   static int16_t startP1 = 0 ;
   static int16_t startP2 = 0 ;
   static int16_t startP3 = 0 ;
   static uint8_t hue = 0 ;
 
-  startP1 = beatsin8( 40, 0, NUM_LEDS );  // start position
-  startP2 = beatsin8( 45, 0, NUM_LEDS );  // start position
-  startP3 = beatsin8( 42, 0, NUM_LEDS );  // start position
-
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-  fillGradientRing(startP, CHSV(hue, 255, 0), startP + SL_MIDPOINT, CHSV(hue, 255, 255));
-  fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + SL_LENGHT, CHSV(hue, 255, 0));
-
-  fillGradientRing(startP2, CHSV(hue+30, 255, 0), startP2 + SL_MIDPOINT, CHSV(hue + 30, 255, 255));
-  fillGradientRing(startP2 + SL_MIDPOINT + 1, CHSV(hue+30, 255, 255), startP2 + SL_LENGHT, CHSV(hue + 30, 255, 0));
-
-  fillGradientRing(startP3, CHSV(hue+60, 255, 0), startP3 + SL_MIDPOINT, CHSV(hue + 60, 255, 255));
-  fillGradientRing(startP3 + SL_MIDPOINT + 1, CHSV(hue+60, 255, 255), startP3 + SL_LENGHT, CHSV(hue + 60, 255, 0));
-
+  for( int i = 0; i < SL_NUMSTRIPES ; i++ ) {
+    startP = lerp8by8( 0, NUM_LEDS, beat8( 40 + (i*3) )) ;  // 40, 43, 46
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    fillGradientRing(startP, CHSV(hue + (i*30), 255, 0), startP + SL_MIDPOINT, CHSV(hue, 255, 255));
+    fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + SL_LENGHT, CHSV(hue, 255, 0));
+  }
 
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
   #ifdef ESP8266

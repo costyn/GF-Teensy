@@ -2,7 +2,7 @@
 #define HOOP
 
 // ---- LED stuff ----
-#define APA_102
+#define APA_102_SLOW
 #define NUM_LEDS 87
 #define MY_DATA_PIN PIN_SPI_MOSI
 #define MY_CLOCK_PIN PIN_SPI_SCK
@@ -52,7 +52,7 @@
 #define RT_BOUNCYBALLS
 #define RT_DROPLETS
 #define RT_QUAD_STROBE
-#define RT_CIRC_LOADER
+//#define RT_CIRC_LOADER
 //#define RT_DROPLETS2
 //#define RT_POVPATTERNS
 
