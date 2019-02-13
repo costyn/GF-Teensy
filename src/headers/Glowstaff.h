@@ -59,6 +59,7 @@
 #define RT_COLOR_GLOW
 #define RT_BOUNCYBALLS
 #define RT_DROPLETS
+#define RT_RIPPLE
 // --- MPU Patterns ----
 #ifdef USING_MPU
 #define RT_SHAKE_IT

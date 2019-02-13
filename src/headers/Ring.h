@@ -21,9 +21,9 @@
 #define X_ACCEL_OFFSET  -1527
 #define Y_ACCEL_OFFSET  -1127
 #define Z_ACCEL_OFFSET  2339
-#define X_GYRO_OFFSET  51
-#define Y_GYRO_OFFSET  4
-#define Z_GYRO_OFFSET  -7
+#define X_GYRO_OFFSET   51
+#define Y_GYRO_OFFSET   4
+#define Z_GYRO_OFFSET   -7
 
 // ---- Patterns ----
 #define RT_P_RB_STRIPE

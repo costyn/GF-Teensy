@@ -127,6 +127,12 @@ const char *routines[] = {
 #ifdef RT_CIRC_LOADER
   "circloader",
 #endif
+#ifdef RT_RIPPLE
+  "ripple",
+#endif
+#ifdef RT_RANDOMWALK
+  "randomwalk",
+#endif
 #ifdef RT_POVPATTERNS
   "povpatterns",
 #endif
@@ -423,6 +429,19 @@ void ledModeSelect() {
 } else if ( strcmp(routines[ledMode], "circloader") == 0 ) {
     circularLoader() ;
     taskLedModeSelect.setInterval( 50 * TASK_RES_MULTIPLIER ) ;
+#endif
+
+
+#ifdef RT_RIPPLE
+} else if ( strcmp(routines[ledMode], "ripple") == 0 ) {
+    ripple() ;
+    taskLedModeSelect.setInterval( 50 * TASK_RES_MULTIPLIER ) ;
+#endif
+
+#ifdef RT_RANDOMWALK
+} else if ( strcmp(routines[ledMode], "randomwalk") == 0 ) {
+    randomWalk() ;
+    taskLedModeSelect.setInterval( 500 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_POVPATTERNS

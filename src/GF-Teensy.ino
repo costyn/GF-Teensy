@@ -18,6 +18,7 @@
 #include <FastLED.h>
 #include <TaskScheduler.h>
 #include <ArduinoTapTempo.h>
+#include <easing.h>
 
 #ifdef USING_MPU
 #include <I2Cdev.h>
@@ -196,11 +197,11 @@ void setup() {
   pinMode(BPM_BUTTON_PIN, INPUT_PULLUP);
   #endif
 
-// Not sure this does anything
+  // Not sure this actually works
   //FastLED.setMaxPowerInVoltsAndMilliamps(5,475);
 
   #ifdef ESP8266
-    yield();
+    yield(); // not sure if needed to placate ESP watchdog
   #endif
 
   /* Start the scheduler */
@@ -294,7 +295,7 @@ void setup() {
 
 void loop() {
   #ifdef ESP8266
-    yield() ; // Sprinkle yields around for ESP's watchdog
+    yield() ; // Pat the ESP watchdog
   #endif
   runner.execute();
 }

@@ -52,7 +52,7 @@
 #define RT_BOUNCYBALLS
 #define RT_DROPLETS
 #define RT_QUAD_STROBE
-//#define RT_CIRC_LOADER
+#define RT_CIRC_LOADER
 //#define RT_DROPLETS2
 //#define RT_POVPATTERNS
 
