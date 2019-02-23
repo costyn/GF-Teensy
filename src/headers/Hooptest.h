@@ -3,12 +3,12 @@
 
 // ---- LED stuff ----
 #define APA_102
-#define NUM_LEDS 55
+#define NUM_LEDS 45
 #define MY_DATA_PIN 11
 #define MY_CLOCK_PIN 13
 
-#define DEFAULT_BRIGHTNESS 50
-#define MAX_BRIGHTNESS 60
+#define DEFAULT_BRIGHTNESS 150
+#define MAX_BRIGHTNESS 150
 #define DEFAULT_LED_MODE 1
 
 // ---- Buttons ----
@@ -18,14 +18,16 @@
 #define BUTTON_GND_PIN 16  // is the button connected to another PIN?
 
 // ---- Misc ----
-#define DEFAULT_BPM 60
+#define DEFAULT_BPM 30
 //#define AUTOADVANCE
 
 // ---- Patterns ----
-#define RT_DROPLETS2
-//#define RT_BOUNCYBALLS
+//#define RT_DROPLETS2
+//#define RT_RIPPLE
 //#define RT_FADE_GLITTER
 //#define RT_POVPATTERNS
+//#define RT_CIRC_LOADER
+#define RT_FASTLOOP3
 
 
 

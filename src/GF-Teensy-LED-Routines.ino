@@ -391,7 +391,7 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
   } else {
     speedCorrection = numTwirlers / 2 ;
   }
-  uint8_t clockwiseFirst = lerp8by8( 0, NUM_LEDS, beat8( tapTempo.getBPM() / speedCorrection )) ;
+  uint8_t clockwiseFirst = /8by8( 0, NUM_LEDS, beat8( tapTempo.getBPM() / speedCorrection )) ;
   const CRGB clockwiseColor = CRGB::White ;
   const CRGB antiClockwiseColor = CRGB::Red ;
 
@@ -1105,29 +1105,97 @@ void droplets2() {
 
 
 
-// Playing with easing http://crisbeto.github.io/angular-svg-round-progressbar/
+
+// #ifdef RT_CIRC_LOADER
+// void circularLoader() {
+//   uint8_t triwave = triwave8( taskLedModeSelect.getRunCounter() * 5 ) ;
+//   uint8_t striplength = lerp8by8( 2, 20, triwave ) ;
+//   static uint8_t startP = 50;
+//
+//   fill_solid( leds, NUM_LEDS, CRGB::Black ) ;
+//   fillSolidRing( startP - striplength, startP, CHSV(0, 255, 255) ) ; // white
+//
+//   FastLED.setBrightness( currentBrightness ) ;
+//   FastLED.show();
+//   startP = startP + lerp8by8( 2, 5, triwave ) ;
+// }
+// #endif
+
 #ifdef RT_CIRC_LOADER
+
+
+// Playing with easing http://crisbeto.github.io/angular-svg-round-progressbar/
+
+// #define FL_LENGHT 20   // how many LEDs should be in the "stripe"
+// #define FL_MIDPOINT FL_LENGHT / 2
+// #define MAX_LOOP_SPEED 5
+//
+// void circularLoader2() {
+//   static int16_t startP = 0 ;
+//   static uint8_t hue = 0 ;
+//   uint8_t cl_length = lerp8by8( 0, 40, beatsin8(  tapTempo.getBPM() ) );
+// //  uint8_t cl_length = 20 ;
+//   uint8_t cl_midpoint = cl_length / 2 ;
+//
+//   startP = lerp8by8( 0, NUM_LEDS, beat8(  tapTempo.getBPM() )) ;  // start position
+//
+//   fill_solid(leds, NUM_LEDS, CRGB::Black);
+//
+//   fillGradientRing(startP - cl_midpoint, CHSV(hue, 255, 0), startP, CHSV(hue, 255, 255));
+//   fillGradientRing(startP + 1, CHSV(hue, 255, 255), startP + cl_midpoint, CHSV(hue, 255, 0));
+//
+//   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+//   #ifdef ESP8266
+//     FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+//   #else
+//     FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+//   #endif
+//   FastLED.show();
+//   hue++  ;
+//
+// }
+
+#define CL_LENGTH  10
 void circularLoader() {
-  AHFloat ah_float = 0.0 ;
-  AHloat eased_float = 0.0 ;
-  eased_float = CubicEaseIn( ah_float );
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  uint8_t uneased_startP = lerp8by8( 0, NUM_LEDS, beat8( 30, 5000 ) );  // start position, runs behind endP
+  uint8_t uneased_endP   = lerp8by8( 0, NUM_LEDS, beat8( 30 ) );  // start position
+  uint8_t startP = QuadraticEaseIn8( uneased_startP );
+  uint8_t endP   = CubicEaseIn8( uneased_endP );
+  DEBUG_PRINT(F("startP: ")) ;
+  DEBUG_PRINT(startP) ;
+  DEBUG_PRINT(F("\t")) ;
+  DEBUG_PRINT(F("endP: ")) ;
+  DEBUG_PRINT(endP) ;
+  // DEBUG_PRINT(F("\t")) ;
+  // DEBUG_PRINT(F("eased: ")) ;
+  // DEBUG_PRINT(eased) ;
+  DEBUG_PRINTLN() ;
 
-  uint8_t triwave = triwave8( taskLedModeSelect.getRunCounter() * 5 ) ;
-  uint8_t striplength = lerp8by8( 2, 20, triwave ) ;
-  static uint8_t startP = 50;
+  fillSolidRing(startP, endP, CHSV(90, 255, 255));
 
-  fill_solid( leds, NUM_LEDS, CRGB::Black ) ;
-  fillSolidRing( startP - striplength, startP, CHSV(0, 255, 255) ) ; // white
-
-  FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
-  startP = startP + lerp8by8( 2, 5, triwave ) ;
 }
+
+uint8_t QuadraticEaseIn8( uint8_t p ) {
+  int     i_100       = map(p, 0, NUM_LEDS, 0, 100); // Map current led p to percentage between 0 - 100
+  AHFloat eased_float = QuadraticEaseInOut( (float)i_100 / (float)100); // Convert to value between 0 - 1
+  int     eased_100   = (int)(eased_float * 100); // convert back to percentage
+  return  map(eased_100, 0, 100, 0, NUM_LEDS);  // convert back to LED position
+}
+
+uint8_t CubicEaseIn8( uint8_t p ) {
+  int     i_100       = map(p, 0, NUM_LEDS, 0, 100); // Map current led p to percentage between 0 - 100
+  AHFloat eased_float = CubicEaseInOut( (float)i_100 / (float)100); // Convert to value between 0 - 1
+  int     eased_100   = (int)(eased_float * 100); // convert back to percentage
+  return  map(eased_100, 0, 100, 0, NUM_LEDS);  // convert back to LED position
+}
+
 #endif
 
 
 
-#if defined(RT_SINLOOP)
+#if defined(RT_FASTLOOP3)
 
 #define SL_LENGHT 20 // how many LEDs should be in the "stripe"
 #define SL_MIDPOINT SL_LENGHT / 2
@@ -1139,15 +1207,14 @@ void fastLoop3() {
 
   fill_solid(leds, NUM_LEDS, CRGB::Black);
   for (int i = 0; i < SL_NUMSTRIPES; i++) {
-    startP = lerp8by8(0, NUM_LEDS, beat8(40 + (i * 3))); // 40, 43, 46
+    startP = lerp8by8(0, NUM_LEDS, beat8(30 + (i * 15))); // 40, 43, 46
     fillGradientRing(startP, CHSV(hue + (i * 30), 255, 0), startP + SL_MIDPOINT,
-                     CHSV(hue, 255, 255));
-    fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue, 255, 255),
-                     startP + SL_LENGHT, CHSV(hue, 255, 0));
+                     CHSV(hue + (i * 60), 255, 255));
+    fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue + (i * 60), 255, 255),
+                     startP + SL_LENGHT, CHSV(hue + (i * 30), 255, 0));
   }
 
-  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) +
-                         currentBrightness; // Add 50% brightness
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness; // Add 50% brightness
 #ifdef ESP8266
   FastLED.setBrightness(_max(extraBright, 255)); // but restrict it to 255
 #else
@@ -1165,7 +1232,7 @@ void fastLoop3() {
 // https://pastebin.com/LfBsPLRn
 // https://www.youtube.com/watch?v=IrMzopUe8F4
 
-#define maxSteps 16
+#define maxSteps 36
 #define fadeRate 0.8
 
 void ripple() {
@@ -1198,7 +1265,7 @@ void ripple() {
     step++;
   } else {
     if (step < maxSteps) {
-      Serial.println(pow(fadeRate, step));
+//      Serial.println(pow(fadeRate, step));
 
       leds[wrap(center + step)] =
           CHSV(color, 255,
@@ -1227,7 +1294,7 @@ void ripple() {
       step = -1;
     }
   }
-
+  FastLED.setBrightness( currentBrightness );
   FastLED.show();
 }
 
@@ -1251,7 +1318,7 @@ void one_color_allHSV(int ahue, int abright) {                // SET ALL LEDS TO
 
 #define randomWalkLowRange  0
 #define randomWalkHighRange NUM_LEDS
-#define moveSize 5
+#define moveSize 2
 
 void randomWalk(){
   static int  place;     // variable to store value in random walk - declared static so that it stores
@@ -1268,6 +1335,7 @@ void randomWalk(){
 
   leds[place] = CHSV(0, 255, 255); // red
   FastLED.show();
+  fadeall(210);
 }
 
 #endif

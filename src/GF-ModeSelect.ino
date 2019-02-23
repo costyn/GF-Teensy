@@ -133,6 +133,9 @@ const char *routines[] = {
 #ifdef RT_RANDOMWALK
   "randomwalk",
 #endif
+#ifdef RT_FASTLOOP3
+  "fastloop3",
+#endif
 #ifdef RT_POVPATTERNS
   "povpatterns",
 #endif
@@ -431,18 +434,24 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 50 * TASK_RES_MULTIPLIER ) ;
 #endif
 
-
 #ifdef RT_RIPPLE
 } else if ( strcmp(routines[ledMode], "ripple") == 0 ) {
     ripple() ;
-    taskLedModeSelect.setInterval( 50 * TASK_RES_MULTIPLIER ) ;
+    taskLedModeSelect.setInterval( 100 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_RANDOMWALK
 } else if ( strcmp(routines[ledMode], "randomwalk") == 0 ) {
     randomWalk() ;
-    taskLedModeSelect.setInterval( 500 * TASK_RES_MULTIPLIER ) ;
+    taskLedModeSelect.setInterval( 5 * TASK_RES_MULTIPLIER ) ;
 #endif
+
+#ifdef RT_FASTLOOP3
+} else if ( strcmp(routines[ledMode], "fastloop3") == 0 ) {
+    fastLoop3() ;
+    taskLedModeSelect.setInterval( 15 * TASK_RES_MULTIPLIER ) ;
+#endif
+
 
 #ifdef RT_POVPATTERNS
 } else if ( strcmp(routines[ledMode], "povpatterns") == 0 ) {
