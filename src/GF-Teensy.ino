@@ -172,7 +172,7 @@ void setup() {
   #endif
 
   #ifdef APA_102_SLOW
-  // Some APA102's require a very low data rate or they start flickering. Shitty quality LEDs? Wiring? Level shifter??
+  // Some APA102's require a very low data rate or they start flickering. Shitty quality LEDs? Wiring? Level shifter?? TODO: figure it out!
   FastLED.addLeds<CHIPSET, MY_DATA_PIN, MY_CLOCK_PIN, COLOR_ORDER, DATA_RATE_MHZ(2)>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   #endif
 
