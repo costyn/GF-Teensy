@@ -3,7 +3,7 @@
 
 // ---- LED stuff ----
 #define APA_102
-#define NUM_LEDS 45
+#define NUM_LEDS 60
 #define MY_DATA_PIN 11
 #define MY_CLOCK_PIN 13
 
@@ -26,15 +26,13 @@
 //#define RT_RIPPLE
 //#define RT_FADE_GLITTER
 //#define RT_POVPATTERNS
-//#define RT_CIRC_LOADER
-#define RT_FASTLOOP3
+#define RT_CIRC_LOADER3
+//#define RT_FASTLOOP3
 
 
 
 // ---- POV Patterns ----
 
 #ifdef RT_POVPATTERNS
-
-
-
+#include "abstractPattern1.h"
 #endif

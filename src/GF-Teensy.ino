@@ -45,7 +45,7 @@
 #define TASK_RES_MULTIPLIER 1000
 #endif
 
-#define BRIGHTFACTOR 0.2
+#define BRIGHTFACTOR 0.1
 
 //black green white red
 

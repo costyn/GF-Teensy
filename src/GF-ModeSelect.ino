@@ -124,8 +124,11 @@ const char *routines[] = {
 #ifdef RT_BOUNCYBALLS
   "bouncyballs",
 #endif
-#ifdef RT_CIRC_LOADER
-  "circloader",
+#ifdef RT_CIRC_LOADER1
+  "circloader1",
+#endif
+#ifdef RT_CIRC_LOADER3
+  "circloader3",
 #endif
 #ifdef RT_RIPPLE
   "ripple",
@@ -133,9 +136,19 @@ const char *routines[] = {
 #ifdef RT_RANDOMWALK
   "randomwalk",
 #endif
+#ifdef RT_REDDOTS1
+  "reddots1",
+#endif
+#ifdef RT_REDDOTS2
+  "reddots2",
+#endif
+#ifdef RT_REDDOTS3
+  "reddots3",
+#endif
 #ifdef RT_FASTLOOP3
   "fastloop3",
 #endif
+
 #ifdef RT_POVPATTERNS
   "povpatterns",
 #endif
@@ -428,10 +441,16 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER ) ;
 #endif
 
-#ifdef RT_CIRC_LOADER
-} else if ( strcmp(routines[ledMode], "circloader") == 0 ) {
-    circularLoader() ;
+#ifdef RT_CIRC_LOADER1
+} else if ( strcmp(routines[ledMode], "circloader1") == 0 ) {
+    circularLoader1() ;
     taskLedModeSelect.setInterval( 50 * TASK_RES_MULTIPLIER ) ;
+#endif
+
+#ifdef RT_CIRC_LOADER3
+} else if ( strcmp(routines[ledMode], "circloader3") == 0 ) {
+    circularLoader3() ;
+    taskLedModeSelect.setInterval( 5 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_RIPPLE
@@ -452,13 +471,31 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 15 * TASK_RES_MULTIPLIER ) ;
 #endif
 
+#ifdef RT_REDDOTS1
+} else if ( strcmp(routines[ledMode], "reddots1") == 0 ) {
+    redDots1() ;
+    taskLedModeSelect.setInterval( TASK_IMMEDIATE ) ;
+#endif
+
+#ifdef RT_REDDOTS2
+} else if ( strcmp(routines[ledMode], "reddots2") == 0 ) {
+    redDots2() ;
+    taskLedModeSelect.setInterval( beatsin8(60,5,15) * TASK_RES_MULTIPLIER ) ;
+#endif
+
+#ifdef RT_REDDOTS3
+} else if ( strcmp(routines[ledMode], "reddots3") == 0 ) {
+    redDots3() ;
+    taskLedModeSelect.setInterval( 40 * TASK_RES_MULTIPLIER ) ;
+#endif
+
 
 #ifdef RT_POVPATTERNS
 } else if ( strcmp(routines[ledMode], "povpatterns") == 0 ) {
   #define width(array) sizeof(array) / sizeof(array[0])
   DEBUG_PRINTLN( "." ) ;
 
-    povPatterns(30, Image, width(Image));
+    povPatterns(30, abstract1, width(abstract1));
     taskLedModeSelect.setInterval( 30000 ) ; // microseconds ; fast needed for POV patterns
 #endif
 

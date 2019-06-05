@@ -125,7 +125,8 @@ void fadeall(uint8_t fade_all_speed) {
 
 void brightall(uint8_t bright_all_speed) {
   for (uint8_t i = 0; i < NUM_LEDS; i++) {
-    leds[i] += leds[i].scale8(bright_all_speed) ;
+    //leds[i] += leds[i].scale8(bright_all_speed) ;
+    leds[i] += brighten8_video(bright_all_speed) ;
   }
 }
 
@@ -144,6 +145,10 @@ void addGlitter( fract8 chanceOfGlitter)
 #define SHORT_PRESS_MIN_TIME 70   // minimum time for a short press - debounce
 
 #ifdef BUTTON_PIN
+
+// longPressActive
+// advance ledMode
+// TODO: Replace horror show below with something like https://github.com/mathertel/OneButton
 
 void checkButtonPress() {
   static unsigned long buttonTimer = 0;
@@ -177,19 +182,7 @@ void checkButtonPress() {
 //        taskLedModeSelect.enableIfNot() ;
       } else {
         if ( millis() - buttonTimer > SHORT_PRESS_MIN_TIME ) {
-          fill_solid(leds, NUM_LEDS, CRGB::Black);
-          FastLED.show() ;
-          ledMode++;
-          if (ledMode == NUMROUTINES ) {
-            ledMode = 0;
-          }
-
-          DEBUG_PRINT(F("ledMode = ")) ;
-          DEBUG_PRINT( routines[ledMode] ) ;
-          DEBUG_PRINT(F(" mode ")) ;
-          DEBUG_PRINTLN( ledMode ) ;
-
-//          FastLED.setBrightness( currentBright ) ; // reset it to 'default'
+          nextLedMode() ;
         }
       }
     }
@@ -211,6 +204,9 @@ void checkButtonPress() {
       uint8_t input = inputString.toInt();
       if( input < NUMROUTINES ) {
         ledMode = inputString.toInt();
+      } else {
+        DEBUG_PRINT("Ignoring input; value too high. NUMROUTINES: ");
+        DEBUG_PRINTLN( NUMROUTINES ) ;
       }
       DEBUG_PRINT("LedMode: ");
       DEBUG_PRINTLN( ledMode ) ;
@@ -254,18 +250,9 @@ void cycleBrightness() {
 }
 #endif
 
-// Custom mod which always a positive number
+// Custom modulo which always returns a positive number
 int mod(int x, int m) {
   return (x % m + m) % m;
-}
-
-
-// for debugging purposes
-int freeRam ()
-{
-  extern int __heap_start, *__brkval;
-  int v;
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }
 
 
@@ -278,7 +265,7 @@ void serialEvent() {
   while (Serial.available()) {
     // get the new byte:
     char inChar = (char)Serial.read();
-    Serial.print(inChar); // echo back what we wrote
+    Serial.print(inChar); // echo back what we got
     // add it to the inputString:
     inputString += inChar;
     // if the incoming character is a newline, set a flag so the main loop can
@@ -291,16 +278,43 @@ void serialEvent() {
 
 #ifdef AUTOADVANCE
 void autoAdvanceLedMode() {
+  nextLedMode() ;
+  // if ( strcmp(routines[ledMode], "jugglePal") == 0 ) {
+  //   taskAutoAdvanceLedMode.delay( TASK_SECOND * 10 ) ;
+  // }
+}
+#endif
+
+void nextLedMode() {
   fill_solid(leds, NUM_LEDS, CRGB::Black);
   FastLED.show() ; // clear the canvas - prevent power fluctuations if a next pattern has lots of brightness
   ledMode++;
-  if ( strcmp(routines[ledMode], "jugglePal") == 0 ) {
-    taskAutoAdvanceLedMode.setInterval( TASK_SECOND * 60 ) ;
-  } else {
-    taskAutoAdvanceLedMode.setInterval( TASK_SECOND * 30 ) ;
-  }
   if (ledMode == NUMROUTINES ) {
     ledMode = 0;
   }
+
+  DEBUG_PRINT(F("ledMode = ")) ;
+  DEBUG_PRINT( routines[ledMode] ) ;
+  DEBUG_PRINT(F(" mode ")) ;
+  DEBUG_PRINTLN( ledMode ) ;
 }
-#endif
+
+uint8_t QuadraticEaseIn8( uint8_t p ) {
+  int     i_100       = map(p, 0, NUM_LEDS, 0, 100); // Map current led p to percentage between 0 - 100
+  AHFloat eased_float = QuadraticEaseInOut( (float)i_100 / (float)100); // Convert to value between 0 - 1
+  int     eased_100   = (int)(eased_float * 100); // convert back to percentage
+  return  map(eased_100, 0, 100, 0, NUM_LEDS);  // convert back to LED position
+}
+
+uint8_t CubicEaseIn8( uint8_t p ) {
+  int     i_100       = map(p, 0, NUM_LEDS, 0, 100); // Map current led p to percentage between 0 - 100
+  AHFloat eased_float = CubicEaseInOut( (float)i_100 / (float)100); // Convert to value between 0 - 1
+  int     eased_100   = (int)(eased_float * 100); // convert back to percentage
+  return  map(eased_100, 0, 100, 0, NUM_LEDS);  // convert back to LED position
+}
+
+uint8_t mappedEase8InOutQuad( uint8_t p ) {
+  int     i_255       = map(p, 0, NUM_LEDS, 0, 255); // Map current led p to percentage between 0 - 100
+  int     eased_255   = ease8InOutQuad( i_255 );
+  return  map(eased_255, 0, 255, 0, NUM_LEDS);  // convert back to LED position
+}

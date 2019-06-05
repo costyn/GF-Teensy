@@ -97,7 +97,7 @@ void getYPRAccel() {
 
     #define RANGE 90
     int conYprX = constrain( yprX, initialYaw - RANGE, initialYaw + RANGE) ;
-    currentBrightness = map( conYprX, initialYaw - RANGE, initialYaw + RANGE, 1, 255) ;
+      currentBrightness = map( conYprX, initialYaw - RANGE, initialYaw + RANGE, 1, 255) ;
      // DEBUG_PRINT(F("\t"));
      // DEBUG_PRINT(yprX);
      // DEBUG_PRINT(F("\t"));
