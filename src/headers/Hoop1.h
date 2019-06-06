@@ -40,6 +40,8 @@
 // #define RT_FIRE2012
 // #define RT_FASTLOOP
 // #define RT_FASTLOOP2
+#define RT_FASTLOOP3
+// #define RT_FASTLOOP4
 // #define RT_PENDULUM
 // #define RT_JUGGLE_PAL
 // #define RT_NOISE_LAVA

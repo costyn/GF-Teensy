@@ -73,6 +73,12 @@ const char *routines[] = {
 #ifdef RT_FASTLOOP2
   "fastloop2",
 #endif
+#ifdef RT_FASTLOOP3
+  "fastloop3",
+#endif
+#ifdef RT_FASTLOOP4
+  "fastloop4",
+#endif
 #ifdef RT_PENDULUM
   "pendulum",
 #endif
@@ -144,9 +150,6 @@ const char *routines[] = {
 #endif
 #ifdef RT_REDDOTS3
   "reddots3",
-#endif
-#ifdef RT_FASTLOOP3
-  "fastloop3",
 #endif
 
 #ifdef RT_POVPATTERNS
@@ -321,14 +324,27 @@ void ledModeSelect() {
 #ifdef RT_FASTLOOP
   } else if ( strcmp(routines[ledMode], "fastloop") == 0 ) {
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER) ;
-    fastLoop( false ) ;
+    fastLoop( false, false ) ;
 #endif
 
 #ifdef RT_FASTLOOP2
   } else if ( strcmp(routines[ledMode], "fastloop2") == 0 ) {
-    fastLoop( true ) ;
+    fastLoop( true, false ) ;
     taskLedModeSelect.setInterval( 10 * TASK_RES_MULTIPLIER) ;
 #endif
+
+#ifdef RT_FASTLOOP3
+} else if ( strcmp(routines[ledMode], "fastloop3") == 0 ) {
+    fastLoop3() ;
+    taskLedModeSelect.setInterval( 15 * TASK_RES_MULTIPLIER ) ;
+#endif
+
+#ifdef RT_FASTLOOP4
+} else if ( strcmp(routines[ledMode], "fastloop4") == 0 ) {
+    fastLoop( true, true ) ;
+    taskLedModeSelect.setInterval( 5 * TASK_RES_MULTIPLIER ) ;
+#endif
+
 
 #ifdef RT_PENDULUM
   } else if ( strcmp(routines[ledMode], "pendulum") == 0 ) {
@@ -465,11 +481,6 @@ void ledModeSelect() {
     taskLedModeSelect.setInterval( 5 * TASK_RES_MULTIPLIER ) ;
 #endif
 
-#ifdef RT_FASTLOOP3
-} else if ( strcmp(routines[ledMode], "fastloop3") == 0 ) {
-    fastLoop3() ;
-    taskLedModeSelect.setInterval( 15 * TASK_RES_MULTIPLIER ) ;
-#endif
 
 #ifdef RT_REDDOTS1
 } else if ( strcmp(routines[ledMode], "reddots1") == 0 ) {

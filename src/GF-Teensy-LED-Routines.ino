@@ -527,15 +527,46 @@ void heartbeat() {
 #endif
 
 
-#if defined(RT_FASTLOOP) || defined(RT_FASTLOOP2)
+#if defined(RT_FASTLOOP) || defined(RT_FASTLOOP2) || defined(FASTLOOP4)
+
+// void fastLoop(bool reverse) {
+//   static int16_t startP = 0 ;
+//   uint8_t hue = beat8(20) ;
+//
+//   if ( ! reverse ) {
+//     startP = lerp8by8( 0, NUM_LEDS, beat8( tapTempo.getBPM() )) ;  // start position
+//   } else {
+//     startP += map( sin8( beat8( tapTempo.getBPM() / 4 )), 0, 255, -MAX_LOOP_SPEED, MAX_LOOP_SPEED + 1 ) ; // it was hard to write, it should be hard to undestand :grimacing:
+//   }
+//
+//   fill_solid(leds, NUM_LEDS, CRGB::Black);
+//   fillGradientRing(startP, CHSV(hue, 255, 0), startP + FL_MIDPOINT, CHSV(hue, 255, 255));
+//   fillGradientRing(startP + FL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + FL_LENGHT, CHSV(hue, 255, 0));
+//
+//   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+//   #ifdef ESP8266
+//     FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+//   #else
+//     FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+//   #endif
+//   FastLED.show();
+// }
+
 
 #define FL_LENGHT 20   // how many LEDs should be in the "stripe"
 #define FL_MIDPOINT FL_LENGHT / 2
 #define MAX_LOOP_SPEED 5
 
-void fastLoop(bool reverse) {
+void fastLoop(bool reverse, bool changeSize ) {
+  static uint8_t fl_length = FL_LENGHT;
+  static uint8_t fl_midpoint = FL_MIDPOINT;
+
+  if( changeSize ) {
+    fl_length = beatsin8(10,5,70) ; // 10x a minute, vary length between 10 and 60
+    fl_midpoint = round(fl_length / 2);
+  }
   static int16_t startP = 0 ;
-  uint8_t hue = beat8(20) ;
+  uint8_t hue = beat8(10) ;
 
   if ( ! reverse ) {
     startP = lerp8by8( 0, NUM_LEDS, beat8( tapTempo.getBPM() )) ;  // start position
@@ -544,8 +575,8 @@ void fastLoop(bool reverse) {
   }
 
   fill_solid(leds, NUM_LEDS, CRGB::Black);
-  fillGradientRing(startP, CHSV(hue, 255, 0), startP + FL_MIDPOINT, CHSV(hue, 255, 255));
-  fillGradientRing(startP + FL_MIDPOINT + 1, CHSV(hue, 255, 255), startP + FL_LENGHT, CHSV(hue, 255, 0));
+  fillGradientRing(startP, CHSV(hue, 255, 0), startP + fl_midpoint, CHSV(hue, 255, 255));
+  fillGradientRing(startP + fl_midpoint + 1, CHSV(hue, 255, 255), startP + fl_length, CHSV(hue, 255, 0));
 
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
   #ifdef ESP8266
@@ -554,6 +585,38 @@ void fastLoop(bool reverse) {
     FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
   #endif
   FastLED.show();
+}
+
+#endif
+
+
+#if defined(RT_FASTLOOP3)
+
+#define SL_LENGHT 20 // how many LEDs should be in the "stripe"
+#define SL_MIDPOINT SL_LENGHT / 2
+#define SL_NUMSTRIPES 3
+
+void fastLoop3() {
+  static int16_t startP = 0;
+  static uint8_t hue = 0;
+
+  fill_solid(leds, NUM_LEDS, CRGB::Black);
+  for (int i = 0; i < SL_NUMSTRIPES; i++) {
+    startP = lerp8by8(0, NUM_LEDS, beat8(30 + (i * 15))); // 40, 43, 46
+    fillGradientRing(startP, CHSV(hue + (i * 30), 255, 0), startP + SL_MIDPOINT,
+                     CHSV(hue + (i * 60), 255, 255));
+    fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue + (i * 60), 255, 255),
+                     startP + SL_LENGHT, CHSV(hue + (i * 30), 255, 0));
+  }
+
+  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness; // Add 50% brightness
+#ifdef ESP8266
+  FastLED.setBrightness(_max(extraBright, 255)); // but restrict it to 255
+#else
+  FastLED.setBrightness(max(extraBright, 255)); // but restrict it to 255
+#endif
+  FastLED.show();
+  hue++;
 }
 #endif
 
@@ -1224,7 +1287,7 @@ void circularLoader3() {
   //   leds[(mytime + i)%NUM_LEDS] = CHSV(0,255,255);
   // }
 //  beatRing() ;
-hemiFlip() ;
+//hemiFlip() ;
   FastLED.show();
   // fadering() ;
 } // circring()
@@ -1260,40 +1323,15 @@ hemiFlip() ;
 //   head = head + 1 ;
 // }
 
-#define FL_LENGHT 20   // how many LEDs should be in the "stripe"
-#define FL_MIDPOINT FL_LENGHT / 2
 #define MAX_LOOP_SPEED 5
 
-void fastLoop(bool reverse) {
-  uint8_t fl_length = beatsin8(5,10,60) ; // 10x a minute, vary length between 10 and 60
-  uint8_t fl_midpoint = round(fl_length / 2);
-  static int16_t startP = 0 ;
-  uint8_t hue = beat8(20) ;
 
-  if ( ! reverse ) {
-    startP = lerp8by8( 0, NUM_LEDS, beat8( tapTempo.getBPM() )) ;  // start position
-  } else {
-    startP += map( sin8( beat8( tapTempo.getBPM() / 4 )), 0, 255, -MAX_LOOP_SPEED, MAX_LOOP_SPEED + 1 ) ; // it was hard to write, it should be hard to undestand :grimacing:
-  }
-
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-  fillGradientRing(startP, CHSV(hue, 255, 0), startP + fl_midpoint, CHSV(hue, 255, 255));
-  fillGradientRing(startP + fl_midpoint + 1, CHSV(hue, 255, 255), startP + fl_length, CHSV(hue, 255, 0));
-
-  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
-  #ifdef ESP8266
-    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
-  #else
-    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
-  #endif
-  FastLED.show();
-}
 
 
 void hemiFlip() {
     uint8_t half1 = round( NUM_LEDS/2 );
     uint8_t half2 = NUM_LEDS - half1 ;
-    uint8_t speed = beatsin8(30,20,100);
+    uint8_t speed = beatsin8(10,10,40);
     if( squarewave8(beat8(speed)) == 0 ) {
       fill_solid(leds, half1, CRGB::Red);
       fill_solid(leds + half1, half2, CRGB::Black);
@@ -1308,7 +1346,7 @@ void beatRing() {
     uint8_t spinBpm = 12 ;
     uint8_t spinAdder = beat8(spinBpm) ;
     spinAdder = 0 ;
-    uint8_t easedHead = ease8InOutQuad((beat8( bpm ) + 50 + spinAdder)%255);
+    uint8_t easedHead = ease8InOutQuad((beat8( bpm ) + 128 + spinAdder)%255);
     uint8_t easedTail = ease8InOutQuad((beat8( bpm ) + spinAdder)%255);
     uint8_t head      = lerp8by8( 0, NUM_LEDS, easedHead);
     uint8_t tail      = lerp8by8( 0, NUM_LEDS, easedTail);
@@ -1336,35 +1374,6 @@ void fadering() {                                                               
 #endif
 
 
-#if defined(RT_FASTLOOP3)
-
-#define SL_LENGHT 20 // how many LEDs should be in the "stripe"
-#define SL_MIDPOINT SL_LENGHT / 2
-#define SL_NUMSTRIPES 3
-
-void fastLoop3() {
-  static int16_t startP = 0;
-  static uint8_t hue = 0;
-
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-  for (int i = 0; i < SL_NUMSTRIPES; i++) {
-    startP = lerp8by8(0, NUM_LEDS, beat8(30 + (i * 15))); // 40, 43, 46
-    fillGradientRing(startP, CHSV(hue + (i * 30), 255, 0), startP + SL_MIDPOINT,
-                     CHSV(hue + (i * 60), 255, 255));
-    fillGradientRing(startP + SL_MIDPOINT + 1, CHSV(hue + (i * 60), 255, 255),
-                     startP + SL_LENGHT, CHSV(hue + (i * 30), 255, 0));
-  }
-
-  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness; // Add 50% brightness
-#ifdef ESP8266
-  FastLED.setBrightness(_max(extraBright, 255)); // but restrict it to 255
-#else
-  FastLED.setBrightness(max(extraBright, 255)); // but restrict it to 255
-#endif
-  FastLED.show();
-  hue++;
-}
-#endif
 
 
 
