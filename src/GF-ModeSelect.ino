@@ -1,3 +1,6 @@
+
+
+
 // Routine Palette Rainbow is always included - a safe routine
 const char *routines[] = {
   "p_rb",
@@ -168,6 +171,13 @@ void ledModeSelect() {
   #ifdef ESP8266
     yield();
   #endif
+
+  // ONly works if BPM set with button :(
+  // if ( tapTempo.beatProgress() > 0.95 ) {
+  //   digitalWrite(BUTTON_LED_PIN, HIGH); // turn on LED, normal operation
+  // } else {
+  //   digitalWrite(BUTTON_LED_PIN, LOW); // turn on LED, normal operation
+  // }
 
   if ( strcmp(routines[ledMode], "p_rb") == 0  ) {
     FillLEDsFromPaletteColors(0) ;

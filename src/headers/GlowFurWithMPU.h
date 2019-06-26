@@ -1,4 +1,5 @@
 // ==== Glow Fur (the original) ====
+// https://github.com/FastLED/FastLED/wiki/ESP8266-notes
 
 // ---- LED stuff ----
 #define NEO_PIXEL

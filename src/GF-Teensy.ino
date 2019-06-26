@@ -15,6 +15,8 @@
 #define _TASK_MICRO_RES
 #define _TASK_TIMECRITICAL
 
+//#define FASTLED_ESP8266_RAW_PIN_ORDER
+
 #include <FastLED.h>
 #include <TaskScheduler.h>
 #include <ArduinoTapTempo.h>
@@ -28,7 +30,7 @@
 // Uncomment for debug output to Serial. Comment to make small(er) code :)
 #define DEBUG
 
-// Uncommment to get MPU debbuging:
+// Uncommment to get MPU debbuging to Serial :
 //#define DEBUG_WITH_TASK
 
 #ifdef DEBUG
@@ -45,11 +47,12 @@
 #define TASK_RES_MULTIPLIER 1000
 #endif
 
+// some patterns which only fill the stips partially can use a little
+// brightness boost compared to the ones that light up all LEDs.
+// Use sparingly as it'll boost quickly and trip current limiters in power supplies.
 #define BRIGHTFACTOR 0.1
 
-//black green white red
-
-#ifdef NEO_PIXEL
+#if defined(NEO_PIXEL) || defined(NEO_PIXEL_MULTI)
 #define CHIPSET     WS2812B
 #define COLOR_ORDER GRB  // Try mixing up the letters (RGB, GBR, BRG, etc) for a whole new world of color combinations
 #endif
@@ -162,24 +165,44 @@ Task taskGetDMPData( 3 * TASK_RES_MULTIPLIER, TASK_FOREVER, &getDMPData);
 
 void setup() {
   delay( 1000 ); // power-up safety delay
+  #ifdef DEBUG
+  Serial.begin(115200);
+  #endif
+
+  DEBUG_PRINTLN( F("Starting up...")) ;
 
   #ifdef NEO_PIXEL
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  DEBUG_PRINTLN( F("Using NEO_PIXEL")) ;
+  #endif
+
+  // https://github.com/FastLED/FastLED/wiki/Multiple-Controller-Examples#one-array-many-strips
+  #ifdef NEO_PIXEL_MULTI
+  FastLED.addLeds<NEOPIXEL, LED_PIN_1>(leds, 0 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<NEOPIXEL, LED_PIN_2>(leds, 1 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<NEOPIXEL, LED_PIN_3>(leds, 2 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<NEOPIXEL, LED_PIN_4>(leds, 3 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<NEOPIXEL, LED_PIN_5>(leds, 4 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  DEBUG_PRINTLN( F("Using NEO_PIXEL_MULTI")) ;
   #endif
 
   #ifdef APA_102
   FastLED.addLeds<CHIPSET, MY_DATA_PIN, MY_CLOCK_PIN, COLOR_ORDER, DATA_RATE_MHZ(12)>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  DEBUG_PRINTLN( F("Using APA_102")) ;
   #endif
 
   #ifdef APA_102_SLOW
   // Some APA102's require a very low data rate or they start flickering. Shitty quality LEDs? Wiring? Level shifter?? TODO: figure it out!
   FastLED.addLeds<CHIPSET, MY_DATA_PIN, MY_CLOCK_PIN, COLOR_ORDER, DATA_RATE_MHZ(2)>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
+  DEBUG_PRINTLN( F("Using APA_102_SLOW")) ;
   #endif
 
   FastLED.setBrightness(  currentBrightness );
 
   #if defined(BUTTON_PIN)
   pinMode(BUTTON_PIN, INPUT_PULLUP);
+  DEBUG_PRINT( F("Using BUTTON_PIN: ")) ;
+  DEBUG_PRINTLN( BUTTON_PIN );
   #endif
 
   // On these boards one of the button pins is connected to these, so we pull it low so when the button is pressed, the input pin goes low too.
@@ -191,10 +214,18 @@ void setup() {
   #if defined(BUTTON_LED_PIN)
   pinMode(BUTTON_LED_PIN, OUTPUT);
   digitalWrite(BUTTON_LED_PIN, HIGH);
+  DEBUG_PRINT( F("Using BUTTON_LED_PIN: ")) ;
+  DEBUG_PRINTLN( BUTTON_LED_PIN );
   #endif
 
   #if defined(BPM_BUTTON_PIN)
   pinMode(BPM_BUTTON_PIN, INPUT_PULLUP);
+  DEBUG_PRINT( F("Using BPM_BUTTON_PIN: ")) ;
+  DEBUG_PRINTLN( BPM_BUTTON_PIN );
+  #endif
+
+  #ifdef AUTOADVANCE
+  DEBUG_PRINTLN( F("Using AUTOADVANCE")) ;
   #endif
 
   // Not sure this actually works

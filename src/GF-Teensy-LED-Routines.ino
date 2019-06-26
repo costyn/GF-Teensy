@@ -92,7 +92,7 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
 void fadeGlitter() {
   addGlitter(70);
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
-  #ifdef ESP8266
+  #if defined(ESP8266) || defined(ESP32)
     FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
   #else
     FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
@@ -404,7 +404,7 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
 
   for (uint8_t i = 0 ; i < numTwirlers ; i++) {
     if ( (i % 2) == 0 ) {
-      pos = (clockwiseFirst + round( NUM_LEDS / numTwirlers ) * i) % NUM_LEDS ;
+      pos = (int)(round(clockwiseFirst + round( NUM_LEDS / numTwirlers ) * i)) % NUM_LEDS ;
       if ( leds[pos] ) { // FALSE if currently BLACK - don't blend with black
         leds[pos] = blend( leds[pos], clockwiseColor, 128 ) ;
       } else {
@@ -415,9 +415,9 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
 
       if ( opposing ) {
         uint8_t antiClockwiseFirst = NUM_LEDS - (lerp8by8( 0, NUM_LEDS, beat8( tapTempo.getBPM() / speedCorrection ))) % NUM_LEDS ;
-        pos = (antiClockwiseFirst + round( NUM_LEDS / numTwirlers ) * i) % NUM_LEDS ;
+        pos = (int)(round(antiClockwiseFirst + round( NUM_LEDS / numTwirlers ) * i)) % NUM_LEDS ;
       } else {
-        pos = (clockwiseFirst + round( NUM_LEDS / numTwirlers ) * i) % NUM_LEDS ;
+        pos = (int)(round(clockwiseFirst + round( NUM_LEDS / numTwirlers ) * i)) % NUM_LEDS ;
       }
       if ( leds[pos] ) { // FALSE if currently BLACK - don't blend with black
         leds[pos] = blend( leds[pos], antiClockwiseColor, 128 ) ;
@@ -428,7 +428,7 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
 
   }
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
-  #ifdef ESP8266
+  #if defined(ESP8266) || defined(ESP32)
     FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
   #else
     FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
@@ -579,7 +579,7 @@ void fastLoop(bool reverse, bool changeSize ) {
   fillGradientRing(startP + fl_midpoint + 1, CHSV(hue, 255, 255), startP + fl_length, CHSV(hue, 255, 0));
 
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
-  #ifdef ESP8266
+  #if defined(ESP8266) || defined(ESP32)
     FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
   #else
     FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
@@ -610,7 +610,7 @@ void fastLoop3() {
   }
 
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness; // Add 50% brightness
-#ifdef ESP8266
+#if defined(ESP8266) || defined(ESP32)
   FastLED.setBrightness(_max(extraBright, 255)); // but restrict it to 255
 #else
   FastLED.setBrightness(max(extraBright, 255)); // but restrict it to 255
