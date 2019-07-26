@@ -63,16 +63,16 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
     colorIndex += STEPS;
   }
 
-  #if ! defined(BALLOON) && ! defined(JELLY) && ! defined(GLOWSTAFF)
+#if ! defined(BALLOON) && ! defined(JELLY) && ! defined(GLOWSTAFF)
   //add extra glitter during "fast"
   if ( taskLedModeSelect.getInterval() < 5000 ) {
     addGlitter(250);
   } else {
     addGlitter(0);
   }
-  #endif
+#endif
 
-#ifdef USING_MPU
+#if defined( USING_MPU ) && ! defined(JELLY_V2)
   FastLED.setBrightness( map( constrain(aaRealZ, 0, P_MAX_POS_ACCEL), 0, P_MAX_POS_ACCEL, currentBrightness, 10 )) ;
 #else
   FastLED.setBrightness( 255 );

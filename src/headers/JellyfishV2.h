@@ -5,7 +5,7 @@
 // https://github.com/FastLED/FastLED/wiki/ESP8266-notes
 // ---- LED stuff ----
 #define NEO_PIXEL_MULTI
-#define LED_PIN_1    12
+#define LED_PIN_1    21
 #define LED_PIN_2    27
 #define LED_PIN_3    33
 #define LED_PIN_4    15
@@ -22,23 +22,23 @@
 #define LED_PIN_8    4
 
 // ---- Buttons ----
-#define BUTTON_PIN 21
+#define BUTTON_PIN 12
 #define BUTTON_LED_PIN 13
 // #define BPM_BUTTON_PIN 7
 
 // ---- Misc ----
-#define DEFAULT_BPM 120
+#define DEFAULT_BPM 30
 #define AUTOADVANCE
 #define BATTERY_PIN A13
 #define USING_MPU
 
 // ---- MPU Calibration: TODO! ----
-#define X_ACCEL_OFFSET  -1527
-#define Y_ACCEL_OFFSET  -1127
-#define Z_ACCEL_OFFSET  2339
-#define X_GYRO_OFFSET   51
-#define Y_GYRO_OFFSET   4
-#define Z_GYRO_OFFSET   -7
+#define X_ACCEL_OFFSET  -670
+#define Y_ACCEL_OFFSET  392
+#define Z_ACCEL_OFFSET  1260
+#define X_GYRO_OFFSET   86
+#define Y_GYRO_OFFSET   62
+#define Z_GYRO_OFFSET   -29
 
 // ---- Patterns ----
 #define RT_P_RB_STRIPE
@@ -69,3 +69,5 @@
 #define RT_PULSE_5_3
 #define RT_THREE_SIN_PAL
 #define RT_COLOR_GLOW
+#define RT_REDDOTS1
+#define RT_REDDOTS2

@@ -30,7 +30,6 @@
 // Uncomment for debug output to Serial. Comment to make small(er) code :)
 #define DEBUG
 
-// Uncommment to get MPU debbuging to Serial :
 //#define DEBUG_WITH_TASK
 
 #ifdef DEBUG
@@ -178,11 +177,11 @@ void setup() {
 
   // https://github.com/FastLED/FastLED/wiki/Multiple-Controller-Examples#one-array-many-strips
   #ifdef NEO_PIXEL_MULTI
-  FastLED.addLeds<NEOPIXEL, LED_PIN_1>(leds, 0 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
-  FastLED.addLeds<NEOPIXEL, LED_PIN_2>(leds, 1 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
-  FastLED.addLeds<NEOPIXEL, LED_PIN_3>(leds, 2 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
-  FastLED.addLeds<NEOPIXEL, LED_PIN_4>(leds, 3 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
-  FastLED.addLeds<NEOPIXEL, LED_PIN_5>(leds, 4 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<WS2813, LED_PIN_1, COLOR_ORDER>(leds, 0 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<WS2813, LED_PIN_2, COLOR_ORDER>(leds, 1 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<WS2813, LED_PIN_3, COLOR_ORDER>(leds, 2 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<WS2813, LED_PIN_4, COLOR_ORDER>(leds, 3 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
+  FastLED.addLeds<WS2813, LED_PIN_5, COLOR_ORDER>(leds, 4 * NUM_LEDS_PER_STRIP, NUM_LEDS_PER_STRIP);
   DEBUG_PRINTLN( F("Using NEO_PIXEL_MULTI")) ;
   #endif
 
