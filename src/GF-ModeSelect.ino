@@ -452,7 +452,7 @@ void ledModeSelect() {
 #ifdef RT_DROPLETS
 } else if ( strcmp(routines[ledMode], "droplets") == 0 ) {
     droplets() ;
-    taskLedModeSelect.setInterval( 30 * TASK_RES_MULTIPLIER ) ;
+    taskLedModeSelect.setInterval( 200 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_BOUNCYBALLS

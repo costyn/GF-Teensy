@@ -1,17 +1,16 @@
-// Fan (old crappy one)
-#define OLDFAN
-
 // ---- LED stuff ----
 #define NEO_PIXEL
-#define LED_PIN     17   // which pin your Neopixels are connected to
-#define NUM_LEDS 84
-#define DEFAULT_BRIGHTNESS 50
-#define MAX_BRIGHTNESS 70
+#define LED_PIN     4   // which pin your Neopixels are connected to
+#define NUM_LEDS 59
+#define DEFAULT_BRIGHTNESS 70
+#define MAX_BRIGHTNESS 250
 
 // ---- Buttons ----
-#define BUTTON_PIN 16
-#define BUTTON_LED_PIN 
-#define BPM_BUTTON_PIN 7
+#define BUTTON_PIN 5
+#define BPM_BUTTON_PIN 6
+#define BUTTON_LED_PIN 13
+#define AUTOADVANCE
+
 
 // ---- Misc ----
 #define DEFAULT_BPM 120
@@ -44,3 +43,6 @@
 #define RT_PULSE_5_3
 #define RT_THREE_SIN_PAL
 #define RT_COLOR_GLOW
+#define RT_REDDOTS2
+#define RT_FASTLOOP4
+#define RT_REDDOTS1

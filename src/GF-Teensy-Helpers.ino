@@ -140,6 +140,15 @@ void addGlitter( fract8 chanceOfGlitter)
   }
 }
 
+void addColorGlitter( fract8 chanceOfGlitter)
+{
+  for ( uint8_t i = 0 ; i < 5 ; i++ ) {
+    if ( random8() < chanceOfGlitter) {
+      leds[ random16(NUM_LEDS) ] += CHSV(beat8(55), 255, 255);
+    }
+  }
+}
+
 
 #define LONG_PRESS_MIN_TIME 500  // minimum time for a long press
 #define SHORT_PRESS_MIN_TIME 70   // minimum time for a short press - debounce

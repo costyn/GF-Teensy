@@ -4,15 +4,21 @@
 // https://github.com/FastLED/FastLED/wiki/Multiple-Controller-Examples#one-array-many-strips
 // https://github.com/FastLED/FastLED/wiki/ESP8266-notes
 // ---- LED stuff ----
-#define NEO_PIXEL_MULTI
-#define LED_PIN_1    21
-#define LED_PIN_2    27
-#define LED_PIN_3    33
-#define LED_PIN_4    15
-#define LED_PIN_5    32
-#define NUM_LEDS_PER_STRIP 41
-#define NUM_STRIPS 5
-#define NUM_LEDS NUM_LEDS_PER_STRIP * NUM_STRIPS
+// #define NEO_PIXEL_MULTI
+// #define LED_PIN_1    21
+// #define LED_PIN_2    27
+// #define LED_PIN_3    33
+// #define LED_P0IN_4    15
+// #define LED_PIN_5    32
+// #define NUM_LEDS_PER_STRIP 41
+// #define NUM_STRIPS 5
+// #define NUM_LEDS NUM_LEDS_PER_STRIP * NUM_STRIPS
+// #define DEFAULT_BRIGHTNESS 100
+// #define MAX_BRIGHTNESS 150
+
+#define NEO_PIXEL
+#define LED_PIN     21   // which pin your Neopixels are connected to
+#define NUM_LEDS 205
 #define DEFAULT_BRIGHTNESS 100
 #define MAX_BRIGHTNESS 150
 
@@ -28,9 +34,9 @@
 
 // ---- Misc ----
 #define DEFAULT_BPM 30
-#define AUTOADVANCE
+//ZZ#define AUTOADVANCE
 #define BATTERY_PIN A13
-#define USING_MPU
+// #define USING_MPU
 
 // ---- MPU Calibration: TODO! ----
 #define X_ACCEL_OFFSET  -670
@@ -53,10 +59,10 @@
 #define RT_TWIRL6
 #define RT_TWIRL2_O
 #define RT_TWIRL4_O
-#define RT_TWIRL6_O
+// #define RT_TWIRL6_O
 #define RT_FADE_GLITTER
 #define RT_DISCO_GLITTER
-#define RT_HEARTBEAT
+//#define RT_HEARTBEAT
 #define RT_FASTLOOP
 #define RT_FASTLOOP2
 #define RT_PENDULUM
@@ -69,5 +75,5 @@
 #define RT_PULSE_5_3
 #define RT_THREE_SIN_PAL
 #define RT_COLOR_GLOW
-#define RT_REDDOTS1
+//#define RT_REDDOTS1
 #define RT_REDDOTS2

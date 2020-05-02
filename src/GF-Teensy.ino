@@ -15,6 +15,11 @@
 #define _TASK_MICRO_RES
 #define _TASK_TIMECRITICAL
 
+// #ifdef ESP32
+// #define FASTLED_ALLOW_INTERRUPTS 1    // Allow interrupts, to prevent wifi weirdness ; https://github.com/FastLED/FastLED/wiki/Interrupt-problems
+// #define INTERRUPT_THRESHOLD 1   // also see https://github.com/FastLED/FastLED/issues/367
+// #endif
+
 //#define FASTLED_ESP8266_RAW_PIN_ORDER
 
 #include <FastLED.h>
@@ -24,7 +29,7 @@
 
 #ifdef USING_MPU
 #include <I2Cdev.h>
-#include <MPU6050_6Axis_MotionApps20.h>
+#include <MPU6050_6Axis_MotionApps20.h>   // https://github.com/jrowberg/i2cdevlib/issues/346 when using ESP32cd ..
 #endif
 
 // Uncomment for debug output to Serial. Comment to make small(er) code :)
@@ -53,7 +58,7 @@
 
 #if defined(NEO_PIXEL) || defined(NEO_PIXEL_MULTI)
 #define CHIPSET     WS2812B
-#define COLOR_ORDER GRB  // Try mixing up the letters (RGB, GBR, BRG, etc) for a whole new world of color combinations
+#define COLOR_ORDER GRB
 #endif
 
 

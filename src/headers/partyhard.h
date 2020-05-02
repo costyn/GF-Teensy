@@ -1,21 +1,24 @@
-// Fan (old crappy one)
-#define OLDFAN
+// Party Hard
 
 // ---- LED stuff ----
 #define NEO_PIXEL
 #define LED_PIN     17   // which pin your Neopixels are connected to
-#define NUM_LEDS 84
-#define DEFAULT_BRIGHTNESS 50
-#define MAX_BRIGHTNESS 70
+#define NUM_LEDS 120
+#define DEFAULT_BRIGHTNESS 250
+#define MAX_BRIGHTNESS 255
 
 // ---- Buttons ----
-#define BUTTON_PIN 16
-#define BUTTON_LED_PIN 
-#define BPM_BUTTON_PIN 7
+// #define BUTTON_PIN 18
+// #define BUTTON_LED_PIN 3
+// #define BPM_BUTTON_PIN 7
+// #define BUTTON_GND_PIN 15  // is the button connected to another PIN?
 
 // ---- Misc ----
-#define DEFAULT_BPM 120
+#define DEFAULT_BPM 130
+#define AUTOADVANCE
 
+
+// ---- Patterns ----
 #define RT_P_RB_STRIPE
 #define RT_P_OCEAN
 #define RT_P_HEAT

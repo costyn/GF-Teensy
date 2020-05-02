@@ -16,7 +16,7 @@
 
 void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
   static uint8_t startIndex = 15;  // initialize at start
-#ifdef JELLY
+  #if defined(JELLY) || defined(XMAS)
   static int flowDir = -1 ;
 #else
   static int flowDir = 1 ;
@@ -1498,9 +1498,12 @@ void redDots1() {
       fill_solid(leds, NUM_LEDS, CRGB::Black); // black
     }
 
-    for( int i = 0 ; i < NUM_LEDS ; i += 10 ) {
-        leds[i] = CRGB::Red;
-    }
+    addColorGlitter(180);
+    // for( int i = 0 ; i < NUM_LEDS ; i += 10 ) {
+    //   if( i % 10 == 0 ) {
+    //     leds[i] = CHSV(beat8(15), 255, 255);
+    //   }
+    // }
     FastLED.setBrightness( currentBrightness ) ;
     FastLED.show();
 }
