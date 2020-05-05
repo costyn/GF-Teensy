@@ -427,12 +427,13 @@ void twirlers(uint8_t numTwirlers, bool opposing ) {
     }
 
   }
-  uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
-  #if defined(ESP8266) || defined(ESP32)
-    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
-  #else
-    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
-  #endif
+  // uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
+  // #if defined(ESP8266) || defined(ESP32)
+  //   FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+  // #else
+  //   FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+  // #endif
+  FastLED.setBrightness( currentBrightness );
   FastLED.show();
 //  taskLedModeSelect.setInterval( 1 * TASK_RES_MULTIPLIER ) ;
 }

@@ -1,16 +1,15 @@
 // ---- LED stuff ----
 #define NEO_PIXEL
-#define LED_PIN     4   // which pin your Neopixels are connected to
-#define NUM_LEDS 59
+#define LED_PIN    17   // which pin your Neopixels are connected to
+#define NUM_LEDS 60
 #define DEFAULT_BRIGHTNESS 70
-#define MAX_BRIGHTNESS 250
+#define MAX_BRIGHTNESS 180
 
 // ---- Buttons ----
-#define BUTTON_PIN 5
-#define BPM_BUTTON_PIN 6
-#define BUTTON_LED_PIN 13
-#define AUTOADVANCE
-
+#define BUTTON_PIN 6
+#define BPM_BUTTON_PIN 7
+// #define BUTTON_LED_PIN 13
+// #define AUTOADVANCE
 
 // ---- Misc ----
 #define DEFAULT_BPM 120
