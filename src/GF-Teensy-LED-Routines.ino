@@ -87,15 +87,14 @@ void FillLEDsFromPaletteColors(uint8_t paletteIndex ) {
 #endif
 }
 
-
 #ifdef RT_FADE_GLITTER
 void fadeGlitter() {
   addGlitter(70);
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
   #if defined(ESP8266) || defined(ESP32)
-    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+    FastLED.setBrightness( _max(extraBright,MAX_BRIGHTNESS) ) ; // but restrict it to MAX_BRIGHTNESS
   #else
-    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+    FastLED.setBrightness( max(extraBright,MAX_BRIGHTNESS) ) ; // but restrict it to MAX_BRIGHTNESS
   #endif
   FastLED.show();
   fadeToBlackBy(leds, NUM_LEDS, 50);
@@ -112,6 +111,22 @@ void discoGlitter() {
 #endif
   FastLED.setBrightness( currentBrightness ) ;
   FastLED.show();
+}
+#endif
+
+#ifdef RT_FADE_GLITTER_COLOR
+void fadeColorGlitter(){
+  fract8 chanceOfGlitter = 180;
+
+  for ( uint8_t i = 0 ; i < 5 ; i++ ) {
+    if ( random8() < chanceOfGlitter) {
+      leds[ random16(NUM_LEDS) ] += CHSV(255, 255, 255);
+    }
+  }
+
+  for (uint8_t i = 0; i < NUM_LEDS; i++) {
+    leds[i].nscale8(120);
+  }
 }
 #endif
 
@@ -515,14 +530,8 @@ void heartbeat() {
   // beat8 generates index 0-255 (fract8) as per getBPM(). lerp8by8 interpolates that to array index:
   uint8_t hbIndex = lerp8by8( 0, NUM_STEPS, beat8( tapTempo.getBPM() / 2 )) ;
   uint8_t brightness = lerp8by8( 0, 255, hbTable[hbIndex] ) ;
-  //  DEBUG_PRINT(NUM_STEPS) ;
-  //  DEBUG_PRINT(F("\t")) ;
-  //  DEBUG_PRINT(hbIndex) ;
-  //  DEBUG_PRINT(F("\t")) ;
-  //  DEBUG_PRINT(brightness) ;
-  //  DEBUG_PRINTLN() ;
 
-  FastLED.setBrightness( brightness );
+  FastLED.setBrightness( lerp8by8( 0, MAX_BRIGHTNESS, brightness ) ); // interpolate to max MAX_BRIGHTNESS
   FastLED.show();
 }
 #endif
@@ -581,9 +590,9 @@ void fastLoop(bool reverse, bool changeSize ) {
 
   uint16_t extraBright = round(currentBrightness * BRIGHTFACTOR) + currentBrightness ; // Add 50% brightness
   #if defined(ESP8266) || defined(ESP32)
-    FastLED.setBrightness( _max(extraBright,255) ) ; // but restrict it to 255
+    FastLED.setBrightness( _max(extraBright,MAX_BRIGHTNESS) ) ; // but restrict it to MAX_BRIGHTNESS
   #else
-    FastLED.setBrightness( max(extraBright,255) ) ; // but restrict it to 255
+    FastLED.setBrightness( max(extraBright,MAX_BRIGHTNESS) ) ; // but restrict it to MAX_BRIGHTNESS
   #endif
   FastLED.show();
 }
@@ -686,7 +695,7 @@ void fillnoise8(uint8_t currentPalette, uint8_t speed, uint8_t scale, boolean co
     // for our pixel's index into the color palette.
 
     uint8_t index = noise[i];
-    uint8_t bri =   noise[NUM_LEDS - i];
+    uint8_t bri =   noise[NUM_LEDS - i - 1];
     // uint8_t bri =  sin(noise[NUM_LEDS - i]);  // more light/dark variation
 
     // if this palette is a 'loop', add a slowly-changing base value
@@ -960,7 +969,7 @@ void colorGlow() {
   if( brightness < 5 and not indexUpdated ) {
     paletteColorIndex += 32 ;
     indexUpdated = true ;
-    Serial.println(paletteColorIndex);
+    // Serial.println(paletteColorIndex);
   }
 
   if( brightness > 5 and indexUpdated ) {
@@ -1201,73 +1210,73 @@ void droplets2() {
 //
 // #endif
 
-#ifdef RT_CIRC_LOADER1
-void circularLoader1() {
-  uint16_t delay = 1700 ; // milliseconds
-  static bool goStart = true ;
-  static bool goEnd = false ;
-  static long goStartTime = millis() ;
-  static uint8_t uneased_startP = 0 ;
-  static uint8_t uneased_endP = 0 ;
+// #ifdef RT_CIRC_LOADER1
+// void circularLoader1() {
+//   uint16_t delay = 1700 ; // milliseconds
+//   static bool goStart = true ;
+//   static bool goEnd = false ;
+//   static long goStartTime = millis() ;
+//   static uint8_t uneased_startP = 0 ;
+//   static uint8_t uneased_endP = 0 ;
+//
+//   fill_solid(leds, NUM_LEDS, CRGB::Black);
+//   if( taskLedModeSelect.getRunCounter() % NUM_LEDS == 0 && goStart == false  ) {
+//     goStart = true;
+//     goStartTime = millis() ;
+//   }
+//   if( goEnd == false && goStart == true && millis() - goStartTime > delay ) {
+//      goEnd = true ;
+//   }
+//   if( goStart ) {
+//     uneased_startP = uneased_startP + 1;
+//   }
+//   if( goEnd ) {
+//     uneased_endP = uneased_endP + 1;
+//   }
+//   if( uneased_startP >= NUM_LEDS ) {
+//     goStart = false ;
+//     uneased_startP = 0 ;
+//   }
+//   if( uneased_endP >= NUM_LEDS ) {
+//     goEnd = false ;
+//     uneased_endP = 0 ;
+//   }
+//
+//   // uint8_t startP = mappedEase8InOutQuad( uneased_startP );
+//   // uint8_t endP   = mappedEase8InOutQuad( uneased_endP );
+//
+//   uint8_t startP = QuadraticEaseIn8( uneased_startP );
+//   uint8_t endP   = QuadraticEaseIn8( uneased_endP );
+//
+//   // leds[startP] = CRGB::Red;
+//   // leds[endP]   = CRGB::Black;
+//
+//   fillSolidRing(endP,startP,CHSV(beat8(2),255,255));
+//
+//   DEBUG_PRINT(F("getRunCounter: ")) ;
+//   DEBUG_PRINT(taskLedModeSelect.getRunCounter()) ;
+//   DEBUG_PRINT(F("\t")) ;
+//   DEBUG_PRINT(F("goStart: ")) ;
+//   DEBUG_PRINT(goStart) ;
+//   DEBUG_PRINT(F("\t")) ;
+//   DEBUG_PRINT(F("goEnd: ")) ;
+//   DEBUG_PRINT(goEnd) ;
+//   DEBUG_PRINT(F("\t")) ;
+//   DEBUG_PRINT(F("startP: ")) ;
+//   DEBUG_PRINT(startP) ;
+//   DEBUG_PRINT(F("\t")) ;
+//   DEBUG_PRINT(F("endP: ")) ;
+//   DEBUG_PRINT(endP) ;
+//   // DEBUG_PRINT(F("\t")) ;
+//   // DEBUG_PRINT(F("eased: ")) ;
+//   // DEBUG_PRINT(eased) ;
+//   DEBUG_PRINTLN() ;
+//
+//   FastLED.show();
+// }
+// #endif
 
-  fill_solid(leds, NUM_LEDS, CRGB::Black);
-  if( taskLedModeSelect.getRunCounter() % NUM_LEDS == 0 && goStart == false  ) {
-    goStart = true;
-    goStartTime = millis() ;
-  }
-  if( goEnd == false && goStart == true && millis() - goStartTime > delay ) {
-     goEnd = true ;
-  }
-  if( goStart ) {
-    uneased_startP = uneased_startP + 1;
-  }
-  if( goEnd ) {
-    uneased_endP = uneased_endP + 1;
-  }
-  if( uneased_startP >= NUM_LEDS ) {
-    goStart = false ;
-    uneased_startP = 0 ;
-  }
-  if( uneased_endP >= NUM_LEDS ) {
-    goEnd = false ;
-    uneased_endP = 0 ;
-  }
-
-  // uint8_t startP = mappedEase8InOutQuad( uneased_startP );
-  // uint8_t endP   = mappedEase8InOutQuad( uneased_endP );
-
-  uint8_t startP = QuadraticEaseIn8( uneased_startP );
-  uint8_t endP   = QuadraticEaseIn8( uneased_endP );
-
-  // leds[startP] = CRGB::Red;
-  // leds[endP]   = CRGB::Black;
-
-  fillSolidRing(endP,startP,CHSV(beat8(2),255,255));
-
-  DEBUG_PRINT(F("getRunCounter: ")) ;
-  DEBUG_PRINT(taskLedModeSelect.getRunCounter()) ;
-  DEBUG_PRINT(F("\t")) ;
-  DEBUG_PRINT(F("goStart: ")) ;
-  DEBUG_PRINT(goStart) ;
-  DEBUG_PRINT(F("\t")) ;
-  DEBUG_PRINT(F("goEnd: ")) ;
-  DEBUG_PRINT(goEnd) ;
-  DEBUG_PRINT(F("\t")) ;
-  DEBUG_PRINT(F("startP: ")) ;
-  DEBUG_PRINT(startP) ;
-  DEBUG_PRINT(F("\t")) ;
-  DEBUG_PRINT(F("endP: ")) ;
-  DEBUG_PRINT(endP) ;
-  // DEBUG_PRINT(F("\t")) ;
-  // DEBUG_PRINT(F("eased: ")) ;
-  // DEBUG_PRINT(eased) ;
-  DEBUG_PRINTLN() ;
-
-  FastLED.show();
-}
-#endif
-
-#ifdef RT_CIRC_LOADER3
+// #ifdef RT_CIRC_LOADER3
 
 /* Circular loader ring (a real basic one)
  *
@@ -1279,7 +1288,7 @@ void circularLoader1() {
  *
  */
 
-void circularLoader3() {
+// void circularLoader3() {
   // memset(leds, 0, NUM_LEDS * 3);                   // Clear the strand
   // uint8_t mytime = (millis() / 50) % NUM_LEDS;
   // uint8_t mylen = beatsin8(12,1,NUM_LEDS/3);
@@ -1289,46 +1298,45 @@ void circularLoader3() {
   // }
 //  beatRing() ;
 //hemiFlip() ;
-  FastLED.show();
+  // FastLED.show();
   // fadering() ;
-} // circring()
+// } // circring()
+
+#ifdef RT_CIRC_LOADER3
+
+#define LOADER_MIN_LENGTH 3
+#define LOADER_MAX_LENGTH NUM_LEDS - LOADER_MIN_LENGTH
+#define LOADER_FAST 3
+#define LOADER_SLOW 1
+
+void circularLoader3() {
+    static uint32_t tailPos = 0;
+    static uint32_t headPos = LOADER_MIN_LENGTH; // Start position
+    static uint8_t headSpeed = LOADER_FAST;
+    static uint8_t tailSpeed = LOADER_SLOW;
+
+    if( headPos - tailPos <= LOADER_MIN_LENGTH ) {
+       headSpeed = LOADER_FAST;
+       tailSpeed = LOADER_SLOW;
+    }
+
+    if( headPos - tailPos >= LOADER_MAX_LENGTH ) {
+       headSpeed = LOADER_SLOW;
+       tailSpeed = LOADER_FAST;
+    }
+
+    headPos += headSpeed;
+    tailPos += tailSpeed;
+
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    fillSolidRing(tailPos,headPos,CHSV(beatsin8(2),255,255));
+
+    FastLED.show();
+}
+#endif
 
 
-// void triggeredStart() {
-//     uint8_t bpm = 10 ;
-//     static bool triggered = false ;
-//     uint8_t head = lerp8by8( 0, NUM_LEDS, beat8( bpm ));
-//     if( beat8(bpm) > 20 && beat8(bpm) < 30 ) {
-//        triggered = true ;
-//     }
-//     if( triggered ) {
-//
-//     }
-// }
-
-// void switchLoader() {
-//   static bool switched = false ;
-//   static uint8_t head = 0 ;
-//
-//   if( head >= NUM_LEDS ) {
-//     switched = !switched ;
-//     head = 0 ;
-//     DEBUG_PRINT(F("switched\t")) ;
-//   }
-//
-//   if( switched ) {
-//     leds[mappedEase8InOutQuad(head)] = CRGB::Red;
-//   } else {
-//     leds[mappedEase8InOutQuad(head)] = CRGB::Black;
-//   }
-//   head = head + 1 ;
-// }
-
-#define MAX_LOOP_SPEED 5
-
-
-
-
+#IFDEF EXPERIMENTAL
 void hemiFlip() {
     uint8_t half1 = round( NUM_LEDS/2 );
     uint8_t half2 = NUM_LEDS - half1 ;
@@ -1372,8 +1380,8 @@ void fadering() {                                                               
   fadeToBlackBy(leds, NUM_LEDS, fadeval);
   leds[millis()/20%NUM_LEDS] = CHSV(0,255,255);
 } // fadering()
-#endif
 
+#endif
 
 
 

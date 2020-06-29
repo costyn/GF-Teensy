@@ -228,7 +228,12 @@ void checkButtonPress() {
     }
     if( inputString.charAt(0) == 'm' ) {
       inputString.remove(0,1);
-      currentBrightness = inputString.toInt() ;
+      int requestedBrightness = inputString.toInt() ;
+      if( requestedBrightness > MAX_BRIGHTNESS) {
+        DEBUG_PRINT("Ignoring input; value too high. MAX_BRIGHTNESS: ");
+        DEBUG_PRINTLN( MAX_BRIGHTNESS ) ;
+        currentBrightness = MAX_BRIGHTNESS;
+      }
       DEBUG_PRINT("currentBrightness: ");
       DEBUG_PRINTLN( currentBrightness ) ;
     }

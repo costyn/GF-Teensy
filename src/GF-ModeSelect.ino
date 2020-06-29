@@ -476,7 +476,7 @@ void ledModeSelect() {
 #ifdef RT_CIRC_LOADER3
 } else if ( strcmp(routines[ledMode], "circloader3") == 0 ) {
     circularLoader3() ;
-    taskLedModeSelect.setInterval( 5 * TASK_RES_MULTIPLIER ) ;
+    taskLedModeSelect.setInterval( 30 * TASK_RES_MULTIPLIER ) ;
 #endif
 
 #ifdef RT_RIPPLE

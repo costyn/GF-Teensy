@@ -129,6 +129,12 @@ int activityLevel() {
   return round( (abs( aaRealX )  + abs( aaRealY )  + abs( aaRealZ )) / 3 );
 }
 
+#define S_SENSITIVITY 3500  // lower for less movement to trigger accelerometer routines
+
+void strobe2() {
+  if ( activityLevel() > S_SENSITIVITY ) {
+
+
 
 
 bool isTilted() {

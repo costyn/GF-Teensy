@@ -1,33 +1,22 @@
 // ---- LED stuff ----
 // External Test Strip:
-// #define NEO_PIXEL
-// #define LED_PIN     22   // which pin your Neopixels are connected to
-// #define NUM_LEDS    17
-// #define DEFAULT_BRIGHTNESS 100
-// #define MAX_BRIGHTNESS 150
-
-// #define NUM_LEDS    25
-// #define NEO_PIXEL_MULTI
-// #define LED_PIN_1    22
-// #define LED_PIN_2    27
-// #define NUM_LEDS_PER_STRIP 25
-// #define DEFAULT_BRIGHTNESS 20
-// #define MAX_BRIGHTNESS 20
-
+#define NEO_PIXEL
+#define LED_PIN     26
+#define NUM_LEDS    90
+#define DEFAULT_BRIGHTNESS 100
+#define MAX_BRIGHTNESS 150
 
 // Onboard:
-#define NEO_PIXEL
-#define LED_PIN     27   // which pin your Neopixels are connected to
-#define NUM_LEDS 25
-#define DEFAULT_BRIGHTNESS 20
-#define MAX_BRIGHTNESS 20
-
+// #define NEO_PIXEL
+// #define LED_PIN     27   // which pin your Neopixels are connected to
+// #define NUM_LEDS 25
+// #define DEFAULT_BRIGHTNESS 20
+// #define MAX_BRIGHTNESS 20
 
 // ---- Buttons ----
 #define BUTTON_PIN 39
 // #define BUTTON_LED_PIN 3
 // #define BPM_BUTTON_PIN 7
-// #define BUTTON_GND_PIN 15  // is the button connected to another PIN?
 
 // ---- Misc ----
 #define DEFAULT_BPM 60
